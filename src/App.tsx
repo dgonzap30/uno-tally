@@ -1,6 +1,7 @@
 import { useState, useReducer, useEffect } from 'react'
 import { gameReducer, initialState, migrateState } from './state/gameReducer'
 import { useMultiplayer } from './hooks/useMultiplayer'
+import { useUndoStack } from './hooks/useUndoStack'
 import Header from './components/Header'
 import GameSetup from './components/GameSetup'
 import GameBoard from './components/GameBoard'
@@ -21,6 +22,18 @@ function getInitialMode(): AppMode {
   return { type: 'choosing' }
 }
 
+function UndoToast({ canUndo, onUndo }: { canUndo: boolean; onUndo: () => void }) {
+  if (!canUndo) return null
+  return (
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-4 py-2.5 rounded-xl bg-bg-surface/90 backdrop-blur-md border border-white/[0.08] shadow-[0_4px_20px_rgba(0,0,0,0.4)] animate-slide-up">
+      <span className="text-sm text-text-secondary">Score added</span>
+      <button onClick={onUndo} className="text-sm font-bold text-neon-blue hover:text-neon-cyan transition-colors">
+        Undo
+      </button>
+    </div>
+  )
+}
+
 function SoloGame({ onLeave }: { onLeave: () => void }) {
   const [state, dispatch] = useReducer(gameReducer, initialState, () => {
     try {
@@ -29,6 +42,8 @@ function SoloGame({ onLeave }: { onLeave: () => void }) {
     } catch { /* ignore */ }
     return initialState
   })
+
+  const { dispatchWithUndo, undo, canUndo } = useUndoStack(state, dispatch)
 
   useEffect(() => {
     try {
@@ -47,14 +62,16 @@ function SoloGame({ onLeave }: { onLeave: () => void }) {
       {state.phase === 'setup' ? (
         <GameSetup players={state.players} dispatch={dispatch} />
       ) : (
-        <GameBoard state={state} dispatch={dispatch} />
+        <GameBoard state={state} dispatch={dispatchWithUndo} />
       )}
+      <UndoToast canUndo={canUndo} onUndo={undo} />
     </div>
   )
 }
 
 function OnlineGame({ room, onLeave }: { room: string; onLeave: () => void }) {
   const { state, dispatch, status, peerCount } = useMultiplayer(room)
+  const { dispatchWithUndo, undo, canUndo } = useUndoStack(state, dispatch)
 
   return (
     <div className="min-h-dvh">
@@ -68,8 +85,9 @@ function OnlineGame({ room, onLeave }: { room: string; onLeave: () => void }) {
       {state.phase === 'setup' ? (
         <GameSetup players={state.players} dispatch={dispatch} />
       ) : (
-        <GameBoard state={state} dispatch={dispatch} />
+        <GameBoard state={state} dispatch={dispatchWithUndo} />
       )}
+      <UndoToast canUndo={canUndo} onUndo={undo} />
     </div>
   )
 }

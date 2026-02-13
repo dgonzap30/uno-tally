@@ -18,4 +18,5 @@ export interface GameState {
   phase: 'setup' | 'playing'
   players: Player[]
   currentRound: number
+  roundSubmissions: string[]
 }

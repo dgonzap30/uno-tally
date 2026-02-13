@@ -15,12 +15,25 @@ export const initialState: GameState = {
   phase: 'setup',
   players: [],
   currentRound: 1,
+  roundSubmissions: [],
 }
 
 const PLAYER_COLORS = ['#ff2d55', '#00d4ff', '#39ff14', '#bf5af2', '#ff6d00', '#00fff5']
 
 export function getPlayerColor(index: number): string {
   return PLAYER_COLORS[index % PLAYER_COLORS.length]
+}
+
+function advanceIfComplete(
+  players: Player[],
+  submissions: string[],
+  currentRound: number,
+): { currentRound: number; roundSubmissions: string[] } {
+  const allSubmitted = players.every(p => submissions.includes(p.id))
+  if (allSubmitted) {
+    return { currentRound: currentRound + 1, roundSubmissions: [] }
+  }
+  return { currentRound, roundSubmissions: submissions }
 }
 
 export function migrateState(saved: unknown): GameState {
@@ -34,6 +47,7 @@ export function migrateState(saved: unknown): GameState {
     phase: state.phase as 'setup' | 'playing',
     players,
     currentRound: state.currentRound as number,
+    roundSubmissions: (state.roundSubmissions as string[] | undefined) ?? [],
   }
 }
 
@@ -54,46 +68,52 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
 
     case 'REMOVE_PLAYER':
-      return { ...state, players: state.players.filter(p => p.id !== action.playerId) }
+      return {
+        ...state,
+        players: state.players.filter(p => p.id !== action.playerId),
+        roundSubmissions: state.roundSubmissions.filter(id => id !== action.playerId),
+      }
 
     case 'START_GAME':
-      return { ...state, phase: 'playing' }
+      return { ...state, phase: 'playing', roundSubmissions: [] }
 
-    case 'ADD_SCORE':
-      return {
-        ...state,
-        currentRound: state.currentRound + 1,
-        players: state.players.map(p =>
-          p.id === action.playerId
-            ? {
-                ...p,
-                totalPoints: p.totalPoints + action.points,
-                roundHistory: [
-                  ...p.roundHistory,
-                  { round: state.currentRound, pointsAdded: action.points, source: 'score' as const, timestamp },
-                ],
-              }
-            : p
-        ),
-      }
+    case 'ADD_SCORE': {
+      if (state.roundSubmissions.includes(action.playerId)) return state
+      const updatedPlayers = state.players.map(p =>
+        p.id === action.playerId
+          ? {
+              ...p,
+              totalPoints: p.totalPoints + action.points,
+              roundHistory: [
+                ...p.roundHistory,
+                { round: state.currentRound, pointsAdded: action.points, source: 'score' as const, timestamp },
+              ],
+            }
+          : p
+      )
+      const newSubmissions = [...state.roundSubmissions, action.playerId]
+      const roundState = advanceIfComplete(updatedPlayers, newSubmissions, state.currentRound)
+      return { ...state, players: updatedPlayers, ...roundState }
+    }
 
-    case 'WIN_ROUND':
-      return {
-        ...state,
-        players: state.players.map(p =>
-          p.id === action.loserId
-            ? {
-                ...p,
-                totalPoints: p.totalPoints + 50,
-                roundHistory: [
-                  ...p.roundHistory,
-                  { round: state.currentRound, pointsAdded: 50, source: 'win-bonus' as const, timestamp },
-                ],
-              }
-            : p
-        ),
-        currentRound: state.currentRound + 1,
-      }
+    case 'WIN_ROUND': {
+      if (state.roundSubmissions.includes(action.winnerId)) return state
+      const updatedPlayers = state.players.map(p =>
+        p.id === action.loserId
+          ? {
+              ...p,
+              totalPoints: p.totalPoints + 50,
+              roundHistory: [
+                ...p.roundHistory,
+                { round: state.currentRound, pointsAdded: 50, source: 'win-bonus' as const, timestamp },
+              ],
+            }
+          : p
+      )
+      const newSubmissions = [...state.roundSubmissions, action.winnerId]
+      const roundState = advanceIfComplete(updatedPlayers, newSubmissions, state.currentRound)
+      return { ...state, players: updatedPlayers, ...roundState }
+    }
 
     case 'TAKE_SHOT':
       return {

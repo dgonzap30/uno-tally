@@ -15,7 +15,7 @@ export default function Header({ currentRound, phase, onReset, onLeave }: Header
       <header className="sticky top-0 z-20 bg-bg-primary/80 backdrop-blur-md border-b border-white/[0.05] px-4 py-3"
         style={{ boxShadow: '0 1px 0 rgba(0,212,255,0.06), 0 4px 20px rgba(0,0,0,0.3)' }}
       >
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             {onLeave && (
               <button

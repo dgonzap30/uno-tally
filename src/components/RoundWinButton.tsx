@@ -21,35 +21,32 @@ export default function RoundWinButton({ winnerId, allPlayers, dispatch }: Round
     return (
       <button
         onClick={() => handleWin(opponents[0].id)}
-        className="w-full h-11 rounded-xl bg-neon-green/10 text-neon-green border border-neon-green/25 text-sm font-bold animate-glow-pulse hover:bg-neon-green/15 hover:shadow-[0_0_25px_#39ff1420] transition-all active:scale-95"
-        style={{
-          fontFamily: "var(--font-display)",
-          '--glow-color': '#39ff1425',
-        } as React.CSSProperties}
+        className="shrink-0 h-7 px-3 rounded-lg bg-neon-green/10 text-neon-green border border-neon-green/25 text-xs font-bold hover:bg-neon-green/20 transition-all active:scale-95"
+        title={`+50 pts to ${opponents[0].name}`}
       >
-        Won!
+        Won Round
       </button>
     )
   }
 
   if (picking) {
     return (
-      <div className="flex gap-1.5 flex-wrap items-center">
-        <span className="text-xs text-text-secondary mr-1">Who lost?</span>
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <span className="text-[10px] text-text-muted">Who lost?</span>
         {opponents.map(opp => (
           <button
             key={opp.id}
             onClick={() => handleWin(opp.id)}
-            className="h-9 px-4 rounded-lg bg-neon-amber/15 text-neon-amber border border-neon-amber/30 text-xs font-bold hover:bg-neon-amber/25 hover:shadow-[0_0_12px_#ffb80030] transition-all active:scale-95"
+            className="h-6 px-2.5 rounded-md bg-neon-amber/15 text-neon-amber border border-neon-amber/30 text-[10px] font-bold hover:bg-neon-amber/25 transition-all active:scale-95 truncate max-w-[80px]"
           >
             {opp.name}
           </button>
         ))}
         <button
           onClick={() => setPicking(false)}
-          className="h-8 px-2 rounded-lg text-text-muted text-xs hover:text-text-primary"
+          className="text-text-muted text-xs px-1 hover:text-text-primary"
         >
-          ✕
+          x
         </button>
       </div>
     )
@@ -58,13 +55,9 @@ export default function RoundWinButton({ winnerId, allPlayers, dispatch }: Round
   return (
     <button
       onClick={() => setPicking(true)}
-      className="w-full h-11 rounded-xl bg-neon-green/10 text-neon-green border border-neon-green/25 text-sm font-bold animate-glow-pulse hover:bg-neon-green/15 hover:shadow-[0_0_25px_#39ff1420] transition-all active:scale-95"
-      style={{
-        fontFamily: "var(--font-display)",
-        '--glow-color': '#39ff1425',
-      } as React.CSSProperties}
+      className="shrink-0 h-7 px-3 rounded-lg bg-neon-green/10 text-neon-green border border-neon-green/25 text-xs font-bold hover:bg-neon-green/20 transition-all active:scale-95"
     >
-      Won!
+      Won Round
     </button>
   )
 }

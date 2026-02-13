@@ -10,12 +10,19 @@ interface GameSetupProps {
 
 export default function GameSetup({ players, dispatch }: GameSetupProps) {
   const [name, setName] = useState('')
+  const [error, setError] = useState<string | null>(null)
 
   const addPlayer = () => {
     const trimmed = name.trim()
     if (!trimmed) return
+    if (players.some(p => p.name.toLowerCase() === trimmed.toLowerCase())) {
+      setError('Name already taken')
+      setTimeout(() => setError(null), 2000)
+      return
+    }
     dispatch({ type: 'ADD_PLAYER', name: trimmed })
     setName('')
+    setError(null)
   }
 
   return (
@@ -49,6 +56,10 @@ export default function GameSetup({ players, dispatch }: GameSetupProps) {
           Add
         </button>
       </div>
+
+      {error && (
+        <p className="text-neon-red text-xs mb-2 animate-slide-up">{error}</p>
+      )}
 
       {players.length > 0 && (
         <div className="space-y-2 mb-8">
