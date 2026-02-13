@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import type { GameState } from '../types/game'
 import type { GameAction } from '../state/gameReducer'
 import { getPlayerColor } from '../state/gameReducer'
 import { rankPlayers } from '../utils/playerStats'
 import PlayerCard from './PlayerCard'
 import GameStatsBar from './GameStatsBar'
+import DrinkStatsPanel from './DrinkStatsPanel'
 
 interface GameBoardProps {
   state: GameState
@@ -21,15 +23,21 @@ function getGridClass(count: number): string {
 
 export default function GameBoard({ state, dispatch }: GameBoardProps) {
   const rankings = rankPlayers(state.players)
+  const [drinkPanelOpen, setDrinkPanelOpen] = useState(false)
 
   return (
-    <div className="mx-auto px-3 sm:px-4 py-3 space-y-3">
+    <div className="mx-auto px-3 sm:px-4 py-4 space-y-4">
       <GameStatsBar
         players={state.players}
         currentRound={state.currentRound}
         submittedCount={state.roundSubmissions.length}
       />
-      <div className={`grid gap-3 sm:gap-4 mx-auto ${getGridClass(state.players.length)}`}>
+      <DrinkStatsPanel
+        players={state.players}
+        open={drinkPanelOpen}
+        onToggle={() => setDrinkPanelOpen(o => !o)}
+      />
+      <div className={`grid gap-4 sm:gap-5 mx-auto ${getGridClass(state.players.length)}`}>
         {state.players.map((player, i) => (
           <PlayerCard
             key={player.id}

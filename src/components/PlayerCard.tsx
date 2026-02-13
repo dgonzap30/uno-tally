@@ -72,7 +72,7 @@ export default function PlayerCard({
 
   return (
     <div
-      className={`relative glass-card rounded-xl p-3 sm:p-4 space-y-2.5 animate-card-enter overflow-hidden ${getDangerClasses(stats.dangerLevel)} ${hasSubmitted ? 'opacity-60' : ''}`}
+      className={`relative glass-card rounded-xl p-4 sm:p-5 space-y-3.5 animate-card-enter overflow-hidden ${getDangerClasses(stats.dangerLevel)} ${hasSubmitted ? 'opacity-60' : ''}`}
       style={{
         borderLeftWidth: '3px',
         borderLeftColor: color,

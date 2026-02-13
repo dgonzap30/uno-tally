@@ -12,7 +12,7 @@ export default function GameStatsBar({ players, currentRound, submittedCount }: 
   const totalSips = players.reduce((s, p) => s + p.sipsTaken, 0)
 
   return (
-    <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-bg-surface/60 border border-white/[0.04] text-xs text-text-secondary overflow-x-auto scrollbar-none max-w-4xl mx-auto">
+    <div className="flex items-center gap-4 px-4 py-3 rounded-xl bg-bg-surface/60 border border-white/[0.04] text-sm text-text-secondary overflow-x-auto scrollbar-none max-w-4xl mx-auto">
       {/* Round + submission progress */}
       <span className="shrink-0 font-bold text-text-primary">
         R{currentRound}

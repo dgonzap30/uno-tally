@@ -20,7 +20,7 @@ export default function DrinkTracker({ totalPoints, shotsTaken, sipsTaken }: Dri
             style={{ width: `${(remainder / 10) * 100}%` }}
           />
         </div>
-        <span className="text-[10px] text-text-muted tabular-nums shrink-0 w-12 text-right">
+        <span className="text-xs text-text-muted tabular-nums shrink-0 w-14 text-right">
           {totalPoints === 0
             ? 'clear'
             : ptsToNextSip > 0
@@ -30,7 +30,7 @@ export default function DrinkTracker({ totalPoints, shotsTaken, sipsTaken }: Dri
       </div>
 
       {/* Debt + cleared summary */}
-      <div className="flex items-center justify-between text-[11px]">
+      <div className="flex items-center justify-between text-xs">
         <span className={totalPoints === 0 ? 'text-neon-green font-semibold' : 'text-text-secondary'}>
           {totalPoints === 0
             ? 'No debt'
@@ -42,8 +42,8 @@ export default function DrinkTracker({ totalPoints, shotsTaken, sipsTaken }: Dri
         {(shotsTaken > 0 || sipsTaken > 0) && (
           <span className="text-text-muted/60">
             {[
-              shotsTaken > 0 && `${shotsTaken}s`,
-              sipsTaken > 0 && `${sipsTaken}s`,
+              shotsTaken > 0 && `${shotsTaken} shot${shotsTaken > 1 ? 's' : ''}`,
+              sipsTaken > 0 && `${sipsTaken} sip${sipsTaken > 1 ? 's' : ''}`,
             ].filter(Boolean).join(', ')}{' '}
             cleared
           </span>
