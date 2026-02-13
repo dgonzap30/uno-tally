@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import usePartySocket from "partysocket/react";
 import type { GameState } from "../types/game";
 import type { GameAction } from "../state/gameReducer";
-import { initialState } from "../state/gameReducer";
+import { initialState, migrateState } from "../state/gameReducer";
 
 export type ConnectionStatus = "connecting" | "connected" | "disconnected";
 
@@ -26,7 +26,7 @@ export function useMultiplayer(room: string) {
     onMessage(event: MessageEvent) {
       const msg = JSON.parse(event.data);
       if (msg.type === "state") {
-        setState(msg.state);
+        setState(migrateState(msg.state));
       }
       if (msg.type === "peers") {
         setPeerCount(msg.count);

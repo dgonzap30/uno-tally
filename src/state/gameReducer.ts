@@ -155,7 +155,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...initialState }
 
     case 'LOAD_STATE':
-      return action.state
+      return migrateState(action.state)
 
     default:
       return state
