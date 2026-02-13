@@ -21,10 +21,10 @@ export default function RoundWinButton({ winnerId, allPlayers, dispatch }: Round
     return (
       <button
         onClick={() => handleWin(opponents[0].id)}
-        className="w-full h-11 rounded-xl bg-neon-green text-black text-sm font-bold animate-glow-pulse hover:shadow-[0_0_20px_#39ff1460,0_0_40px_#39ff1430] transition-all active:scale-95"
+        className="w-full h-11 rounded-xl bg-neon-green/10 text-neon-green border border-neon-green/25 text-sm font-bold animate-glow-pulse hover:bg-neon-green/15 hover:shadow-[0_0_25px_#39ff1420] transition-all active:scale-95"
         style={{
           fontFamily: "var(--font-display)",
-          '--glow-color': '#39ff1440',
+          '--glow-color': '#39ff1425',
         } as React.CSSProperties}
       >
         Won!
@@ -40,7 +40,7 @@ export default function RoundWinButton({ winnerId, allPlayers, dispatch }: Round
           <button
             key={opp.id}
             onClick={() => handleWin(opp.id)}
-            className="h-9 px-4 rounded-lg bg-neon-amber/20 text-neon-amber border border-neon-amber/40 text-xs font-bold hover:bg-neon-amber/30 hover:shadow-[0_0_12px_#ffb80040] transition-all active:scale-95"
+            className="h-9 px-4 rounded-lg bg-neon-amber/15 text-neon-amber border border-neon-amber/30 text-xs font-bold hover:bg-neon-amber/25 hover:shadow-[0_0_12px_#ffb80030] transition-all active:scale-95"
           >
             {opp.name}
           </button>
@@ -58,10 +58,10 @@ export default function RoundWinButton({ winnerId, allPlayers, dispatch }: Round
   return (
     <button
       onClick={() => setPicking(true)}
-      className="w-full h-11 rounded-xl bg-neon-green text-black text-sm font-bold animate-glow-pulse hover:shadow-[0_0_20px_#39ff1460,0_0_40px_#39ff1430] transition-all active:scale-95"
+      className="w-full h-11 rounded-xl bg-neon-green/10 text-neon-green border border-neon-green/25 text-sm font-bold animate-glow-pulse hover:bg-neon-green/15 hover:shadow-[0_0_25px_#39ff1420] transition-all active:scale-95"
       style={{
         fontFamily: "var(--font-display)",
-        '--glow-color': '#39ff1440',
+        '--glow-color': '#39ff1425',
       } as React.CSSProperties}
     >
       Won!

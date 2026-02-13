@@ -20,7 +20,7 @@ function getGridClass(count: number): string {
 export default function GameBoard({ state, dispatch }: GameBoardProps) {
   return (
     <div className="max-w-6xl mx-auto px-4 py-4">
-      <div className={`grid gap-4 ${getGridClass(state.players.length)}`}>
+      <div className={`grid gap-5 ${getGridClass(state.players.length)}`}>
         {state.players.map((player, i) => (
           <PlayerCard
             key={player.id}

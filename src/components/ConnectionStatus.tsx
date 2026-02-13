@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { ConnectionStatus as Status } from "../hooks/useMultiplayer";
 
 interface ConnectionStatusProps {
@@ -11,6 +12,8 @@ export default function ConnectionStatus({
   peerCount,
   roomId,
 }: ConnectionStatusProps) {
+  const [copied, setCopied] = useState(false);
+
   const dotColor =
     status === "connected" && peerCount >= 2
       ? "bg-neon-green"
@@ -25,22 +28,30 @@ export default function ConnectionStatus({
         ? `Connected (${peerCount})`
         : "Waiting for opponent...";
 
+  const copyLink = () => {
+    const url = `${window.location.origin}${window.location.pathname}?room=${roomId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
-    <div className="flex items-center justify-center gap-2 py-2 text-xs text-text-secondary">
+    <div className="flex items-center justify-center gap-2.5 py-2.5 text-xs">
       <span
-        className={`inline-block w-2 h-2 rounded-full ${dotColor}`}
-        style={{
-          boxShadow:
-            status === "connected" && peerCount >= 2
-              ? "0 0 6px #39ff1480"
-              : status === "connected"
-                ? "0 0 6px #ffb80080"
-                : "0 0 6px #ff2d5580",
-        }}
+        className={`inline-block w-2 h-2 rounded-full ${dotColor} animate-dot-pulse`}
       />
-      <span>{label}</span>
-      <span className="text-text-muted">·</span>
-      <span className="font-mono text-text-muted">{roomId}</span>
+      <span className="text-text-secondary">{label}</span>
+      <span className="text-text-muted/40">|</span>
+      <button
+        onClick={copyLink}
+        className="flex items-center gap-1.5 font-mono text-text-muted hover:text-neon-blue transition-colors group"
+      >
+        <span className="tracking-widest">{roomId}</span>
+        <span className="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">
+          {copied ? "copied!" : "copy"}
+        </span>
+      </button>
     </div>
   );
 }
