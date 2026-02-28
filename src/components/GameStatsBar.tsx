@@ -19,7 +19,7 @@ export default function GameStatsBar({ players, currentRound, submittedCount }: 
       boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
     }}>
       {/* Round header with progress */}
-      <div className="flex items-center justify-between px-5 py-3.5" style={{
+      <div className="flex items-center justify-between px-3.5 sm:px-5 py-2.5 sm:py-3.5" style={{
         borderBottom: '1px solid rgba(255,255,255,0.04)',
         background: 'linear-gradient(90deg, rgba(9,86,191,0.06) 0%, transparent 50%, rgba(0,166,81,0.06) 100%)',
       }}>
@@ -72,7 +72,7 @@ export default function GameStatsBar({ players, currentRound, submittedCount }: 
       </div>
 
       {/* Leaderboard strip */}
-      <div className="flex items-center gap-2 px-5 py-3 overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-3 overflow-x-auto scrollbar-none">
         {sorted.map((p, i) => {
           const isLeader = i === 0
           const isLast = i === sorted.length - 1 && sorted.length > 1

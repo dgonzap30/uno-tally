@@ -14,9 +14,9 @@ interface GameBoardProps {
 
 function getGridClass(count: number): string {
   switch (count) {
-    case 2: return 'grid-cols-1 sm:grid-cols-2 max-w-5xl auto-rows-fr'
-    case 3: return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl auto-rows-fr'
-    case 4: return 'grid-cols-2 max-w-6xl auto-rows-fr'
+    case 2: return 'grid-cols-1 sm:grid-cols-2 max-w-5xl'
+    case 3: return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl'
+    case 4: return 'grid-cols-2 max-w-6xl'
     default: return 'grid-cols-2 sm:grid-cols-3 max-w-6xl'
   }
 }
@@ -28,9 +28,9 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
   const manyPlayers = state.players.length > 4
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-58px)] overflow-hidden">
+    <div className="flex flex-col h-[calc(100dvh-52px)] overflow-hidden">
       {/* Stats section */}
-      <div className="shrink-0 px-3 sm:px-4 pt-3 pb-2 space-y-2">
+      <div className="shrink-0 px-2.5 sm:px-4 pt-2 pb-1.5 space-y-1.5">
         <GameStatsBar
           players={state.players}
           currentRound={state.currentRound}
@@ -44,8 +44,8 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
       </div>
 
       {/* Player cards grid - fills remaining space */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-4 pb-4">
-        <div className={`grid gap-3 sm:gap-4 mx-auto ${manyPlayers ? 'h-auto' : 'h-full'} ${getGridClass(state.players.length)}`}>
+      <div className="flex-1 min-h-0 overflow-y-auto px-2.5 sm:px-4 pb-3">
+        <div className={`grid gap-2.5 sm:gap-3 mx-auto ${getGridClass(state.players.length)}`}>
           {state.players.map((player, i) => (
             <PlayerCard
               key={player.id}

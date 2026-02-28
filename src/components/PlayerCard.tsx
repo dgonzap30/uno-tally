@@ -118,7 +118,7 @@ export default function PlayerCard({
 
       {/* === Colored top banner === */}
       <div
-        className="card-banner shrink-0 px-4 sm:px-5 py-3 flex items-center justify-between gap-2"
+        className="card-banner shrink-0 px-3 sm:px-5 py-2.5 sm:py-3 flex items-center justify-between gap-2"
         style={{
           background: `linear-gradient(135deg, ${color}20 0%, ${color}08 100%)`,
           borderBottom: `2px solid ${color}25`,
@@ -149,26 +149,25 @@ export default function PlayerCard({
             {player.name}
           </h3>
         </div>
-        {!hasSubmitted && (
-          <RoundWinButton winnerId={player.id} allPlayers={allPlayers} dispatch={dispatch} />
-        )}
-        {hasSubmitted && (
-          <div className="flex items-center gap-2 shrink-0 animate-check-appear">
-            <div
-              className="w-7 h-7 rounded-full flex items-center justify-center"
-              style={{ background: 'rgba(0,166,81,0.15)', boxShadow: '0 0 12px rgba(0,166,81,0.20)' }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M5 13l4 4L19 7" stroke="#00A651" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+        <div className="flex items-center gap-2 shrink-0">
+          {hasSubmitted && (
+            <div className="flex items-center gap-1.5 animate-check-appear">
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center"
+                style={{ background: 'rgba(0,166,81,0.15)', boxShadow: '0 0 12px rgba(0,166,81,0.20)' }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="#00A651" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
             </div>
-            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: '#00A651' }}>Done</span>
-          </div>
-        )}
+          )}
+          <RoundWinButton winnerId={player.id} allPlayers={allPlayers} dispatch={dispatch} />
+        </div>
       </div>
 
       {/* === Score zone — the hero === */}
-      <div className="flex-1 flex flex-col items-start justify-center px-5 sm:px-6 py-4 sm:py-6 min-h-0">
+      <div className="flex flex-col items-start px-4 sm:px-6 py-3 sm:py-5">
         <div className="flex items-baseline gap-2.5">
           <span
             className={`score-display ${scoreSize} ${animating ? 'animate-score-slam' : ''}`}
@@ -189,7 +188,7 @@ export default function PlayerCard({
 
         {/* Inline drink debt indicator */}
         {stats.shotsOwed + stats.sipsOwed > 0 && (
-          <div className="flex items-center gap-3 mt-3">
+          <div className="flex items-center gap-3 mt-2">
             {stats.shotsOwed > 0 && (
               <span className="text-sm font-bold px-2.5 py-0.5 rounded-md"
                 style={{ color: '#ED1C24', background: 'rgba(237,28,36,0.12)', border: '1px solid rgba(237,28,36,0.20)' }}>
@@ -207,7 +206,7 @@ export default function PlayerCard({
       </div>
 
       {/* === Bottom section: tracker + actions === */}
-      <div className="shrink-0 px-4 sm:px-5 pb-4 sm:pb-5 space-y-3">
+      <div className="shrink-0 px-3 sm:px-5 pb-3 sm:pb-4 space-y-2.5">
         <DrinkTracker
           totalPoints={player.totalPoints}
           shotsTaken={player.shotsTaken}
@@ -215,100 +214,62 @@ export default function PlayerCard({
         />
 
         {/* Action row */}
-        {!hasSubmitted && (
-          <>
-            {scoreExpanded ? (
-              <ScoreEntry
-                onSubmit={(points) => dispatch({ type: 'ADD_SCORE', playerId: player.id, points })}
-                onClose={() => setScoreExpanded(false)}
-              />
-            ) : (
-              <div className="flex gap-2.5">
-                <button
-                  onClick={() => setScoreExpanded(true)}
-                  className="flex-1 h-13 rounded-xl text-base font-black transition-all active:scale-93"
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    background: `linear-gradient(180deg, rgba(9,86,191,0.18) 0%, rgba(9,86,191,0.08) 100%)`,
-                    border: '2px solid rgba(9,86,191,0.30)',
-                    color: '#4d94ff',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                  }}
-                >
-                  + POINTS
-                </button>
-                <button
-                  onClick={() => dispatch({ type: 'TAKE_SIP', playerId: player.id })}
-                  disabled={sipsAvailable <= 0}
-                  className={`drink-btn h-13 px-5 rounded-xl text-sm font-black uppercase tracking-wide ${
-                    sipsAvailable <= 0 ? 'text-text-muted/40 cursor-default' : ''
-                  }`}
-                  style={sipsAvailable > 0 ? {
-                    color: '#FFDE00',
-                    background: 'linear-gradient(180deg, rgba(255,222,0,0.18) 0%, rgba(255,222,0,0.08) 100%)',
-                    border: '2px solid rgba(255,222,0,0.30)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                  } : {
-                    background: 'rgba(28,28,36,0.5)',
-                    border: '2px solid rgba(255,255,255,0.04)',
-                  }}
-                >
-                  Sip
-                </button>
-                <button
-                  onClick={() => dispatch({ type: 'TAKE_SHOT', playerId: player.id })}
-                  disabled={shotsAvailable <= 0}
-                  className={`drink-btn h-13 px-5 rounded-xl text-sm font-black uppercase tracking-wide ${
-                    shotsAvailable <= 0 ? 'text-text-muted/40 cursor-default' : ''
-                  }`}
-                  style={shotsAvailable > 0 ? {
-                    color: '#ED1C24',
-                    background: 'linear-gradient(180deg, rgba(237,28,36,0.18) 0%, rgba(237,28,36,0.08) 100%)',
-                    border: '2px solid rgba(237,28,36,0.30)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                  } : {
-                    background: 'rgba(28,28,36,0.5)',
-                    border: '2px solid rgba(255,255,255,0.04)',
-                  }}
-                >
-                  Shot
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Drink buttons when submitted */}
-        {hasSubmitted && (shotsAvailable > 0 || sipsAvailable > 0) && (
-          <div className="flex gap-2.5">
-            {sipsAvailable > 0 && (
-              <button
-                onClick={() => dispatch({ type: 'TAKE_SIP', playerId: player.id })}
-                className="drink-btn flex-1 h-12 rounded-xl text-sm font-black uppercase tracking-wide"
-                style={{
-                  color: '#FFDE00',
-                  background: 'linear-gradient(180deg, rgba(255,222,0,0.18) 0%, rgba(255,222,0,0.08) 100%)',
-                  border: '2px solid rgba(255,222,0,0.30)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                }}
-              >
-                Sip (-10)
-              </button>
-            )}
-            {shotsAvailable > 0 && (
-              <button
-                onClick={() => dispatch({ type: 'TAKE_SHOT', playerId: player.id })}
-                className="drink-btn flex-1 h-12 rounded-xl text-sm font-black uppercase tracking-wide"
-                style={{
-                  color: '#ED1C24',
-                  background: 'linear-gradient(180deg, rgba(237,28,36,0.18) 0%, rgba(237,28,36,0.08) 100%)',
-                  border: '2px solid rgba(237,28,36,0.30)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-                }}
-              >
-                Shot (-100)
-              </button>
-            )}
+        {scoreExpanded ? (
+          <ScoreEntry
+            onSubmit={(points) => dispatch({ type: 'ADD_SCORE', playerId: player.id, points })}
+            onClose={() => setScoreExpanded(false)}
+          />
+        ) : (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setScoreExpanded(true)}
+              className="flex-1 h-11 sm:h-12 rounded-xl text-sm sm:text-base font-black transition-all active:scale-93"
+              style={{
+                fontFamily: 'var(--font-display)',
+                background: `linear-gradient(180deg, rgba(9,86,191,0.18) 0%, rgba(9,86,191,0.08) 100%)`,
+                border: '2px solid rgba(9,86,191,0.30)',
+                color: '#4d94ff',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              }}
+            >
+              + POINTS
+            </button>
+            <button
+              onClick={() => dispatch({ type: 'TAKE_SIP', playerId: player.id })}
+              disabled={sipsAvailable <= 0}
+              className={`drink-btn h-11 sm:h-12 px-4 sm:px-5 rounded-xl text-sm font-black uppercase tracking-wide ${
+                sipsAvailable <= 0 ? 'text-text-muted/40 cursor-default' : ''
+              }`}
+              style={sipsAvailable > 0 ? {
+                color: '#FFDE00',
+                background: 'linear-gradient(180deg, rgba(255,222,0,0.18) 0%, rgba(255,222,0,0.08) 100%)',
+                border: '2px solid rgba(255,222,0,0.30)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              } : {
+                background: 'rgba(28,28,36,0.5)',
+                border: '2px solid rgba(255,255,255,0.04)',
+              }}
+            >
+              Sip
+            </button>
+            <button
+              onClick={() => dispatch({ type: 'TAKE_SHOT', playerId: player.id })}
+              disabled={shotsAvailable <= 0}
+              className={`drink-btn h-11 sm:h-12 px-4 sm:px-5 rounded-xl text-sm font-black uppercase tracking-wide ${
+                shotsAvailable <= 0 ? 'text-text-muted/40 cursor-default' : ''
+              }`}
+              style={shotsAvailable > 0 ? {
+                color: '#ED1C24',
+                background: 'linear-gradient(180deg, rgba(237,28,36,0.18) 0%, rgba(237,28,36,0.08) 100%)',
+                border: '2px solid rgba(237,28,36,0.30)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              } : {
+                background: 'rgba(28,28,36,0.5)',
+                border: '2px solid rgba(255,255,255,0.04)',
+              }}
+            >
+              Shot
+            </button>
           </div>
         )}
 

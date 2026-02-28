@@ -83,7 +83,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, phase: 'playing', roundSubmissions: [] }
 
     case 'ADD_SCORE': {
-      if (state.roundSubmissions.includes(action.playerId)) return state
       const updatedPlayers = state.players.map(p =>
         p.id === action.playerId
           ? {
@@ -96,13 +95,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             }
           : p
       )
-      const newSubmissions = [...state.roundSubmissions, action.playerId]
+      const newSubmissions = state.roundSubmissions.includes(action.playerId)
+        ? state.roundSubmissions
+        : [...state.roundSubmissions, action.playerId]
       const roundState = advanceIfComplete(updatedPlayers, newSubmissions, state.currentRound)
       return { ...state, players: updatedPlayers, ...roundState }
     }
 
     case 'WIN_ROUND': {
-      if (state.roundSubmissions.includes(action.winnerId)) return state
       const updatedPlayers = state.players.map(p =>
         p.id === action.loserId
           ? {
@@ -115,7 +115,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             }
           : p
       )
-      const newSubmissions = [...state.roundSubmissions, action.winnerId]
+      const newSubmissions = state.roundSubmissions.includes(action.winnerId)
+        ? state.roundSubmissions
+        : [...state.roundSubmissions, action.winnerId]
       const roundState = advanceIfComplete(updatedPlayers, newSubmissions, state.currentRound)
       return { ...state, players: updatedPlayers, ...roundState }
     }
