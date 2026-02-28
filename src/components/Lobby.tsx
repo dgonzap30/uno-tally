@@ -44,10 +44,10 @@ export default function Lobby({ onSelect }: LobbyProps) {
   };
 
   return (
-    <div className="min-h-dvh flex items-center justify-center px-4">
-      <div className="max-w-sm w-full text-center">
+    <div className="min-h-dvh flex flex-col items-center justify-center px-6 py-12">
+      <div className="max-w-md w-full text-center">
         {/* Card Fan */}
-        <div className="card-fan mb-6 animate-slide-up" style={{ animationDelay: "0ms" }}>
+        <div className="card-fan mb-10 animate-slide-up" style={{ animationDelay: "0ms" }}>
           <div className="card-fan-card">U</div>
           <div className="card-fan-card">N</div>
           <div className="card-fan-card">O</div>
@@ -55,18 +55,19 @@ export default function Lobby({ onSelect }: LobbyProps) {
 
         {/* Title */}
         <h1
-          className="text-4xl mb-1 tracking-tight animate-slide-up animate-title-glow"
+          className="text-5xl sm:text-7xl mb-3 tracking-tight animate-slide-up"
           style={{
             fontFamily: "var(--font-display)",
             animationDelay: "80ms",
+            textShadow: '0 3px 6px rgba(0,0,0,0.3)',
           }}
         >
           UNO TALLY
         </h1>
-        <p className="text-text-secondary text-sm mb-1 animate-slide-up" style={{ animationDelay: "140ms" }}>
+        <p className="text-text-secondary text-lg mb-1 animate-slide-up font-medium" style={{ animationDelay: "140ms" }}>
           Drinking game score tracker
         </p>
-        <p className="text-text-muted text-xs italic mb-10 animate-slide-up" style={{ animationDelay: "180ms" }}>
+        <p className="text-text-muted text-sm italic mb-14 animate-slide-up" style={{ animationDelay: "180ms" }}>
           Track scores. Take drinks. No mercy.
         </p>
 
@@ -74,44 +75,61 @@ export default function Lobby({ onSelect }: LobbyProps) {
         <div className="animate-slide-up" style={{ animationDelay: "240ms" }}>
           <button
             onClick={() => onSelect({ type: "solo" })}
-            className="w-full h-13 rounded-xl bg-transparent border border-white/[0.1] text-text-secondary text-base font-semibold transition-all active:scale-[0.98] hover:border-white/[0.2] hover:text-text-primary mb-4"
+            className="w-full h-14 rounded-xl text-lg font-semibold transition-all active:scale-[0.96] hover:text-text-primary mb-5"
+            style={{
+              background: 'rgba(28, 28, 36, 0.7)',
+              border: '2px solid rgba(255,255,255,0.10)',
+              color: 'var(--color-text-secondary)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            }}
           >
             Play Solo
           </button>
         </div>
 
         {/* Divider */}
-        <div className="flex items-center gap-3 my-5 animate-slide-up" style={{ animationDelay: "300ms" }}>
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
-          <span className="text-text-muted text-[10px] uppercase tracking-[0.2em] font-semibold">
+        <div className="flex items-center gap-4 my-6 animate-slide-up" style={{ animationDelay: "300ms" }}>
+          <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.10), transparent)' }} />
+          <span className="text-text-muted text-[10px] uppercase tracking-[0.25em] font-bold">
             play online
           </span>
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+          <div className="flex-1 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(255,255,255,0.10), transparent)' }} />
         </div>
 
-        {/* Create Room */}
+        {/* Create Room — hero CTA */}
         <div className="animate-slide-up" style={{ animationDelay: "360ms" }}>
           <button
             onClick={createRoom}
-            className="w-full h-14 rounded-xl bg-gradient-to-r from-neon-blue to-neon-cyan text-black text-lg font-bold transition-all active:scale-[0.98] hover:shadow-[0_0_30px_#00d4ff35,0_0_60px_#00d4ff15] mb-4"
+            className="w-full h-16 rounded-2xl text-xl font-black transition-all active:scale-[0.96] mb-5"
+            style={{
+              fontFamily: 'var(--font-display)',
+              background: 'linear-gradient(135deg, #0956BF 0%, #0d6ee8 50%, #0956BF 100%)',
+              backgroundSize: '200% 100%',
+              color: '#ffffff',
+              boxShadow: '0 6px 20px rgba(9, 86, 191, 0.35), 0 2px 8px rgba(0,0,0,0.3)',
+              animation: 'shimmer 3s ease-in-out infinite',
+            }}
           >
-            Create Room
+            CREATE ROOM
           </button>
         </div>
 
         {/* Room code display after creation */}
         {createdRoom && (
-          <div className="mb-4 p-4 rounded-xl glass-card animate-slide-up">
-            <p className="text-text-muted text-xs uppercase tracking-widest mb-2">Room Code</p>
+          <div className="mb-5 p-5 rounded-2xl table-card animate-slide-up text-center">
+            <p className="text-text-muted text-[10px] uppercase tracking-[0.2em] font-bold mb-3">Room Code</p>
             <p
-              className="text-3xl tracking-[0.3em] text-neon-blue mb-3"
-              style={{ fontFamily: "var(--font-display)", textShadow: "0 0 20px #00d4ff40" }}
+              className="text-4xl tracking-[0.4em] mb-4"
+              style={{ fontFamily: "var(--font-display)", color: '#FFDE00', textShadow: '0 2px 8px rgba(255, 222, 0, 0.3)' }}
             >
               {createdRoom}
             </p>
             <button
               onClick={copyLink}
-              className="text-xs text-text-secondary hover:text-neon-blue transition-colors px-4 py-1.5 rounded-lg border border-white/[0.08] hover:border-neon-blue/30"
+              className="text-sm text-text-secondary transition-all px-5 py-2 rounded-xl"
+              style={{ border: '1px solid rgba(255,255,255,0.08)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#4d94ff')}
+              onMouseLeave={e => (e.currentTarget.style.color = '')}
             >
               {copied ? "Copied!" : "Copy invite link"}
             </button>
@@ -119,29 +137,46 @@ export default function Lobby({ onSelect }: LobbyProps) {
         )}
 
         {/* Join Room */}
-        <div className="flex gap-2 animate-slide-up" style={{ animationDelay: "420ms" }}>
+        <div className="flex gap-3 animate-slide-up" style={{ animationDelay: "420ms" }}>
           <input
             type="text"
             value={joinCode}
             onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
             onKeyDown={(e) => e.key === "Enter" && joinRoom()}
-            placeholder="Room code"
-            className="flex-1 h-12 px-4 rounded-xl bg-bg-input/60 border border-white/[0.06] text-text-primary placeholder:text-text-muted outline-none focus:border-neon-purple/50 focus:ring-1 focus:ring-neon-purple/30 transition-all text-center font-mono tracking-[0.3em] uppercase"
-            style={{ fontSize: "16px" }}
+            placeholder="ROOM CODE"
+            className="flex-1 h-13 px-4 rounded-xl text-text-primary placeholder:text-text-muted/50 outline-none transition-all text-center font-mono tracking-[0.3em] uppercase text-base"
+            style={{
+              fontSize: "16px",
+              background: 'rgba(22, 22, 32, 0.7)',
+              border: '2px solid rgba(255,255,255,0.10)',
+            }}
             maxLength={6}
           />
           <button
             onClick={joinRoom}
             disabled={joinCode.trim().length < 2}
-            className="h-12 px-6 rounded-xl bg-neon-purple/80 text-white font-bold disabled:opacity-20 transition-all active:scale-95 hover:shadow-[0_0_20px_#bf5af230]"
+            className="h-13 px-7 rounded-xl font-black disabled:opacity-15 transition-all active:scale-95"
+            style={{
+              background: 'linear-gradient(180deg, #00A651 0%, #008a42 100%)',
+              color: 'white',
+              boxShadow: '0 4px 12px rgba(0, 166, 81, 0.25)',
+            }}
           >
             Join
           </button>
         </div>
 
-        <p className="mt-10 text-text-muted text-[11px] animate-slide-up" style={{ animationDelay: "480ms" }}>
-          100 pts = 1 shot &middot; 10 pts = 1 sip
-        </p>
+        {/* Rules */}
+        <div className="mt-12 flex items-center justify-center gap-6 animate-slide-up" style={{ animationDelay: "480ms" }}>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full" style={{ background: '#ED1C24' }} />
+            <span className="text-text-muted text-xs">100 pts = 1 shot</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full" style={{ background: '#FFDE00' }} />
+            <span className="text-text-muted text-xs">10 pts = 1 sip</span>
+          </div>
+        </div>
       </div>
     </div>
   );

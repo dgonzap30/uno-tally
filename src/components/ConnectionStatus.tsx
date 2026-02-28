@@ -16,10 +16,10 @@ export default function ConnectionStatus({
 
   const dotColor =
     status === "connected" && peerCount >= 2
-      ? "bg-neon-green"
+      ? "bg-[#00A651]"
       : status === "connected"
-        ? "bg-neon-amber"
-        : "bg-neon-red";
+        ? "bg-[#FFDE00]"
+        : "bg-[#ED1C24]";
 
   const label =
     status === "disconnected"
@@ -45,7 +45,9 @@ export default function ConnectionStatus({
       <span className="text-text-muted/40">|</span>
       <button
         onClick={copyLink}
-        className="flex items-center gap-1.5 font-mono text-text-muted hover:text-neon-blue transition-colors group"
+        className="flex items-center gap-1.5 font-mono text-text-muted transition-colors group"
+        onMouseEnter={e => (e.currentTarget.style.color = '#4d94ff')}
+        onMouseLeave={e => (e.currentTarget.style.color = '')}
       >
         <span className="tracking-widest">{roomId}</span>
         <span className="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">

@@ -25,9 +25,18 @@ function getInitialMode(): AppMode {
 function UndoToast({ canUndo, onUndo }: { canUndo: boolean; onUndo: () => void }) {
   if (!canUndo) return null
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-4 py-2.5 rounded-xl bg-bg-surface/90 backdrop-blur-md border border-white/[0.08] shadow-[0_4px_20px_rgba(0,0,0,0.4)] animate-slide-up">
-      <span className="text-sm text-text-secondary">Score added</span>
-      <button onClick={onUndo} className="text-sm font-bold text-neon-blue hover:text-neon-cyan transition-colors">
+    <div
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 px-6 py-3.5 rounded-2xl animate-slide-up"
+      style={{
+        background: 'rgba(28, 28, 36, 0.92)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '2px solid rgba(255,255,255,0.10)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+      }}
+    >
+      <span className="text-sm text-text-secondary font-medium">Score added</span>
+      <button onClick={onUndo} className="text-sm font-black transition-colors" style={{ color: '#0956BF' }}>
         Undo
       </button>
     </div>

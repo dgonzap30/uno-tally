@@ -12,38 +12,55 @@ export default function Header({ currentRound, phase, onReset, onLeave }: Header
 
   return (
     <>
-      <header className="sticky top-0 z-20 bg-bg-primary/80 backdrop-blur-md border-b border-white/[0.05] px-4 py-3"
-        style={{ boxShadow: '0 1px 0 rgba(0,212,255,0.06), 0 4px 20px rgba(0,0,0,0.3)' }}
+      <header
+        className="sticky top-0 z-20 px-4 py-3"
+        style={{
+          background: 'linear-gradient(180deg, rgba(20, 20, 28, 0.95) 0%, rgba(24, 24, 32, 0.90) 100%)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderBottom: '2px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.3)',
+        }}
       >
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             {onLeave && (
               <button
                 onClick={onLeave}
-                className="text-text-muted hover:text-text-primary transition-colors text-lg leading-none -mr-1"
+                className="text-text-muted hover:text-text-primary transition-colors text-lg leading-none -mr-1 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/[0.05]"
                 aria-label="Back to lobby"
               >
                 ←
               </button>
             )}
             <h1
-              className="text-xl tracking-tight"
-              style={{ fontFamily: "var(--font-display)", textShadow: '0 0 20px #00d4ff40, 0 0 40px #00d4ff15' }}
+              className="text-xl tracking-tight font-black"
+              style={{ fontFamily: "var(--font-display)", textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}
             >
               UNO TALLY
             </h1>
             {phase === 'playing' && (
-              <span className="text-xs font-bold bg-neon-blue/10 text-neon-blue border border-neon-blue/25 px-3 py-1 rounded-full"
-                style={{ boxShadow: '0 0 12px #00d4ff20' }}
+              <span
+                className="text-xs font-black px-3 py-1 rounded-full"
+                style={{
+                  background: 'rgba(9, 86, 191, 0.20)',
+                  color: '#4d94ff',
+                  border: '1px solid rgba(9, 86, 191, 0.35)',
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 800,
+                }}
               >
-                Round {currentRound}
+                R{currentRound}
               </span>
             )}
           </div>
           {phase === 'playing' && (
             <button
               onClick={() => setShowConfirm(true)}
-              className="text-sm text-text-muted hover:text-neon-red transition-colors"
+              className="text-sm text-text-muted transition-colors font-medium"
+              style={{ }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#ED1C24')}
+              onMouseLeave={e => (e.currentTarget.style.color = '')}
             >
               New Game
             </button>
@@ -52,20 +69,34 @@ export default function Header({ currentRound, phase, onReset, onLeave }: Header
       </header>
 
       {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onClick={() => setShowConfirm(false)}>
-          <div className="glass-card rounded-2xl p-6 max-w-sm w-full animate-slide-up" style={{ boxShadow: '0 0 60px #00000080' }} onClick={e => e.stopPropagation()}>
-            <h2 className="text-lg font-bold mb-2" style={{ fontFamily: "var(--font-display)" }}>New Game?</h2>
-            <p className="text-text-secondary text-sm mb-6">All current progress will be lost.</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md" onClick={() => setShowConfirm(false)}>
+          <div
+            className="table-card rounded-2xl p-7 max-w-sm w-full animate-slide-up"
+            style={{ boxShadow: '0 0 80px rgba(0,0,0,0.6)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 className="text-xl font-black mb-2" style={{ fontFamily: "var(--font-display)" }}>New Game?</h2>
+            <p className="text-text-secondary text-sm mb-7">All current progress will be lost.</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowConfirm(false)}
-                className="flex-1 h-12 rounded-xl bg-bg-input/80 border border-white/[0.06] text-text-secondary font-semibold transition-colors hover:bg-bg-input"
+                className="flex-1 h-13 rounded-xl font-bold transition-all active:scale-95"
+                style={{
+                  background: 'rgba(28, 28, 36, 0.8)',
+                  border: '2px solid rgba(255,255,255,0.08)',
+                  color: 'var(--color-text-secondary)',
+                }}
               >
                 Cancel
               </button>
               <button
                 onClick={() => { onReset(); setShowConfirm(false) }}
-                className="flex-1 h-12 rounded-xl bg-neon-red/90 text-white font-bold transition-all hover:shadow-[0_0_25px_#ff2d5535]"
+                className="flex-1 h-13 rounded-xl font-black transition-all active:scale-95"
+                style={{
+                  background: 'linear-gradient(180deg, #ED1C24 0%, #c8101a 100%)',
+                  color: 'white',
+                  boxShadow: '0 4px 12px rgba(237, 28, 36, 0.3)',
+                }}
               >
                 Reset
               </button>

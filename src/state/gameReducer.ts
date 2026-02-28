@@ -18,10 +18,15 @@ export const initialState: GameState = {
   roundSubmissions: [],
 }
 
-const PLAYER_COLORS = ['#ff2d55', '#00d4ff', '#39ff14', '#bf5af2', '#ff6d00', '#00fff5']
+const PLAYER_COLORS = ['#ED1C24', '#0956BF', '#00A651', '#FFDE00', '#ED1C24', '#0956BF']
 
 export function getPlayerColor(index: number): string {
   return PLAYER_COLORS[index % PLAYER_COLORS.length]
+}
+
+export function getPlayerTextColor(index: number): string {
+  const color = getPlayerColor(index)
+  return color === '#FFDE00' ? '#1a1a2e' : '#ffffff'
 }
 
 function advanceIfComplete(

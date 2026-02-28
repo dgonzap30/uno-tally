@@ -11,13 +11,13 @@ interface DrinkStatsPanelProps {
 function dangerDot(level: string) {
   switch (level) {
     case 'critical':
-      return 'bg-neon-red animate-dot-pulse'
+      return 'bg-[#ED1C24] shadow-[0_0_6px_rgba(237,28,36,0.5)] animate-dot-pulse'
     case 'hot':
-      return 'bg-neon-amber'
+      return 'bg-[#FFDE00] shadow-[0_0_6px_rgba(255,222,0,0.4)]'
     case 'mild':
-      return 'bg-neon-blue/60'
+      return 'bg-[#0956BF]/50'
     default:
-      return 'bg-neon-green/50'
+      return 'bg-[#00A651]/40'
   }
 }
 
@@ -38,20 +38,38 @@ function formatCleared(shotsTaken: number, sipsTaken: number): string {
 }
 
 export default function DrinkStatsPanel({ players, open, onToggle }: DrinkStatsPanelProps) {
+  const totalTaken = players.reduce((s, p) => s + p.shotsTaken + p.sipsTaken, 0)
+
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       <button
         onClick={onToggle}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-text-secondary hover:text-text-primary bg-bg-surface/40 hover:bg-bg-surface/70 border border-white/[0.04] transition-colors"
+        className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95"
+        style={{
+          background: open ? 'rgba(28,28,36,0.7)' : 'rgba(28,28,36,0.4)',
+          border: '2px solid rgba(255,255,255,0.06)',
+          color: open ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+        }}
       >
-        <span>{open ? '▾' : '▸'}</span>
+        <span className="text-xs" style={{ color: '#FFDE00' }}>{open ? '▾' : '▸'}</span>
         <span>Drink Tally</span>
+        {totalTaken > 0 && (
+          <span className="text-xs text-text-muted font-normal ml-1 bg-white/[0.04] px-2 py-0.5 rounded-md">
+            {totalTaken} taken
+          </span>
+        )}
       </button>
 
       {open && (
-        <div className="mt-2 glass-card rounded-xl overflow-hidden animate-slide-up">
+        <div className="mt-2 rounded-xl overflow-hidden animate-slide-up" style={{
+          background: 'rgba(28,28,36,0.7)',
+          border: '2px solid rgba(255,255,255,0.06)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+        }}>
           {/* Header */}
-          <div className="grid grid-cols-[1fr_auto_auto] gap-4 px-4 py-2.5 border-b border-white/[0.06] text-xs font-bold text-text-muted uppercase tracking-wider">
+          <div className="grid grid-cols-[1fr_auto_auto] gap-4 px-5 py-3 text-[10px] font-black text-text-muted uppercase tracking-[0.15em]"
+            style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
+          >
             <span>Player</span>
             <span className="w-28 text-center">Owed</span>
             <span className="w-28 text-center">Cleared</span>
@@ -67,26 +85,21 @@ export default function DrinkStatsPanel({ players, open, onToggle }: DrinkStatsP
             return (
               <div
                 key={player.id}
-                className="grid grid-cols-[1fr_auto_auto] gap-4 items-center px-4 py-3 border-b border-white/[0.03] last:border-b-0 hover:bg-white/[0.02] transition-colors"
+                className="grid grid-cols-[1fr_auto_auto] gap-4 items-center px-5 py-3.5 hover:bg-white/[0.02] transition-colors"
+                style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}
               >
-                {/* Name + danger dot */}
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <span className={`shrink-0 w-2 h-2 rounded-full ${dangerDot(stats.dangerLevel)}`} />
-                  <span
-                    className="font-semibold text-sm truncate"
-                    style={{ color }}
-                  >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className={`shrink-0 w-2.5 h-2.5 rounded-full ${dangerDot(stats.dangerLevel)}`} />
+                  <span className="font-bold text-sm truncate" style={{ color }}>
                     {player.name}
                   </span>
                 </div>
-
-                {/* Owed */}
-                <span className={`w-28 text-center text-sm ${owed === 'None' ? 'text-text-muted' : 'text-neon-amber font-medium'}`}>
+                <span className={`w-28 text-center text-sm font-medium ${owed === 'None' ? 'text-text-muted/40' : ''}`}
+                  style={owed !== 'None' ? { color: '#FFDE00' } : undefined}>
                   {owed}
                 </span>
-
-                {/* Cleared */}
-                <span className={`w-28 text-center text-sm ${cleared === 'None' ? 'text-text-muted' : 'text-neon-green/80'}`}>
+                <span className={`w-28 text-center text-sm font-medium ${cleared === 'None' ? 'text-text-muted/40' : ''}`}
+                  style={cleared !== 'None' ? { color: '#00A651' } : undefined}>
                   {cleared}
                 </span>
               </div>

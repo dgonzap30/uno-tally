@@ -10,50 +10,101 @@ export default function GameStatsBar({ players, currentRound, submittedCount }: 
   const sorted = [...players].sort((a, b) => a.totalPoints - b.totalPoints)
   const totalShots = players.reduce((s, p) => s + p.shotsTaken, 0)
   const totalSips = players.reduce((s, p) => s + p.sipsTaken, 0)
+  const inProgress = submittedCount > 0 && submittedCount < players.length
 
   return (
-    <div className="flex items-center gap-4 px-4 py-3 rounded-xl bg-bg-surface/60 border border-white/[0.04] text-sm text-text-secondary overflow-x-auto scrollbar-none max-w-4xl mx-auto">
-      {/* Round + submission progress */}
-      <span className="shrink-0 font-bold text-text-primary">
-        R{currentRound}
-      </span>
-      {submittedCount > 0 && submittedCount < players.length && (
-        <span className="shrink-0 text-neon-blue">
-          {submittedCount}/{players.length}
-        </span>
-      )}
-
-      <div className="w-px h-4 bg-white/[0.08] shrink-0" />
-
-      {/* Leaderboard */}
-      <div className="flex items-center gap-2.5 shrink-0">
-        {sorted.map((p, i) => (
-          <span
-            key={p.id}
-            className={`flex items-center gap-1 shrink-0 ${
-              i === 0 ? 'text-neon-green' :
-              i === sorted.length - 1 && sorted.length > 1 ? 'text-neon-red' :
-              'text-text-muted'
-            }`}
-          >
-            <span className="font-semibold truncate max-w-[60px]">{p.name}</span>
-            <span className="tabular-nums font-mono">{p.totalPoints}</span>
-          </span>
-        ))}
+    <div className="rounded-2xl overflow-hidden max-w-5xl mx-auto" style={{
+      background: 'linear-gradient(180deg, rgba(28,28,36,0.90) 0%, rgba(24,24,32,0.95) 100%)',
+      border: '2px solid rgba(255,255,255,0.06)',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+    }}>
+      {/* Round header with progress */}
+      <div className="flex items-center justify-between px-5 py-3.5" style={{
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
+        background: 'linear-gradient(90deg, rgba(9,86,191,0.06) 0%, transparent 50%, rgba(0,166,81,0.06) 100%)',
+      }}>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2.5">
+            <span
+              className="text-2xl font-black"
+              style={{ fontFamily: 'var(--font-display)', color: '#4d94ff' }}
+            >
+              R{currentRound}
+            </span>
+          </div>
+          {inProgress && (
+            <div className="flex items-center gap-2.5">
+              <div className="flex gap-1.5">
+                {players.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                      i < submittedCount
+                        ? 'bg-[#00A651] shadow-[0_0_6px_rgba(0,166,81,0.4)]'
+                        : 'bg-white/8'
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-text-muted font-bold tabular-nums">
+                {submittedCount}/{players.length}
+              </span>
+            </div>
+          )}
+        </div>
+        {(totalShots > 0 || totalSips > 0) && (
+          <div className="flex items-center gap-2 text-sm">
+            {totalShots > 0 && (
+              <span className="font-bold px-2 py-0.5 rounded-md"
+                style={{ color: '#ED1C24', background: 'rgba(237,28,36,0.10)' }}>
+                {totalShots} shot{totalShots !== 1 ? 's' : ''}
+              </span>
+            )}
+            {totalSips > 0 && (
+              <span className="font-bold px-2 py-0.5 rounded-md"
+                style={{ color: '#FFDE00', background: 'rgba(255,222,0,0.10)' }}>
+                {totalSips} sip{totalSips !== 1 ? 's' : ''}
+              </span>
+            )}
+            <span className="text-text-muted/50 text-xs">taken</span>
+          </div>
+        )}
       </div>
 
-      {(totalShots > 0 || totalSips > 0) && (
-        <>
-          <div className="w-px h-4 bg-white/[0.08] shrink-0" />
-          <span className="shrink-0 text-text-muted">
-            {[
-              totalShots > 0 && `${totalShots} shot${totalShots !== 1 ? 's' : ''}`,
-              totalSips > 0 && `${totalSips} sip${totalSips !== 1 ? 's' : ''}`,
-            ].filter(Boolean).join(' + ')}{' '}
-            taken
-          </span>
-        </>
-      )}
+      {/* Leaderboard strip */}
+      <div className="flex items-center gap-2 px-5 py-3 overflow-x-auto scrollbar-none">
+        {sorted.map((p, i) => {
+          const isLeader = i === 0
+          const isLast = i === sorted.length - 1 && sorted.length > 1
+          const accentColor = isLeader ? '#00A651' : isLast ? '#ED1C24' : '#ffffff'
+
+          return (
+            <div
+              key={p.id}
+              className="flex items-center gap-2 shrink-0 px-3 py-1.5 rounded-lg transition-colors"
+              style={{
+                background: isLeader ? 'rgba(0,166,81,0.10)' :
+                             isLast ? 'rgba(237,28,36,0.10)' :
+                             'rgba(255,255,255,0.03)',
+                border: `1px solid ${isLeader ? 'rgba(0,166,81,0.20)' : isLast ? 'rgba(237,28,36,0.20)' : 'transparent'}`,
+              }}
+            >
+              <span
+                className="font-bold text-sm truncate max-w-[72px]"
+                style={{ color: isLeader || isLast ? accentColor : 'var(--color-text-secondary)' }}
+              >
+                {p.name}
+              </span>
+              <span
+                className="tabular-nums text-sm font-black"
+                style={{ fontFamily: 'var(--font-score)', color: isLeader || isLast ? accentColor : 'var(--color-text-muted)' }}
+              >
+                {p.totalPoints}
+              </span>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

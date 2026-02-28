@@ -5,50 +5,50 @@ interface DrinkTrackerProps {
 }
 
 export default function DrinkTracker({ totalPoints, shotsTaken, sipsTaken }: DrinkTrackerProps) {
-  const shots = Math.floor(totalPoints / 100)
-  const sips = Math.floor((totalPoints % 100) / 10)
-  const remainder = totalPoints % 10
-  const ptsToNextSip = remainder === 0 ? 0 : 10 - remainder
+  const remainder = totalPoints % 100
+  const ptsToNextShot = remainder === 0 ? 0 : 100 - remainder
+  const isCritical = totalPoints >= 100
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       {/* Progress bar + countdown */}
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1 h-2.5 rounded-full bg-bg-input/80 border border-white/[0.04] overflow-hidden">
+      <div className="flex items-center gap-3">
+        <div
+          className="relative flex-1 h-3.5 rounded-full overflow-hidden"
+          style={{
+            background: 'rgba(22, 22, 32, 0.8)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)',
+          }}
+        >
           <div
-            className="h-full progress-bar-neon transition-all duration-500 ease-out"
-            style={{ width: `${(remainder / 10) * 100}%` }}
+            className={`h-full ${isCritical ? 'progress-bar-critical' : 'progress-bar-neon'} transition-all duration-500 ease-out`}
+            style={{ width: `${(remainder / 100) * 100}%` }}
           />
         </div>
-        <span className="text-xs text-text-muted tabular-nums shrink-0 w-14 text-right">
+        <span className="text-sm font-bold tabular-nums shrink-0 w-18 text-right" style={{
+          color: totalPoints === 0 ? 'var(--color-text-muted)' :
+                 ptsToNextShot === 0 ? '#FFDE00' :
+                 'var(--color-text-muted)',
+        }}>
           {totalPoints === 0
             ? 'clear'
-            : ptsToNextSip > 0
-              ? `${ptsToNextSip} to sip`
-              : 'sip!'}
+            : ptsToNextShot > 0
+              ? `${ptsToNextShot} to shot`
+              : 'shot!'}
         </span>
       </div>
 
-      {/* Debt + cleared summary */}
-      <div className="flex items-center justify-between text-xs">
-        <span className={totalPoints === 0 ? 'text-neon-green font-semibold' : 'text-text-secondary'}>
-          {totalPoints === 0
-            ? 'No debt'
-            : [
-                shots > 0 && `${shots} shot${shots > 1 ? 's' : ''}`,
-                sips > 0 && `${sips} sip${sips > 1 ? 's' : ''}`,
-              ].filter(Boolean).join(' + ') + ' owed' || 'Building...'}
-        </span>
-        {(shotsTaken > 0 || sipsTaken > 0) && (
-          <span className="text-text-muted/60">
-            {[
-              shotsTaken > 0 && `${shotsTaken} shot${shotsTaken > 1 ? 's' : ''}`,
-              sipsTaken > 0 && `${sipsTaken} sip${sipsTaken > 1 ? 's' : ''}`,
-            ].filter(Boolean).join(', ')}{' '}
-            cleared
-          </span>
-        )}
-      </div>
+      {/* Cleared summary */}
+      {(shotsTaken > 0 || sipsTaken > 0) && (
+        <div className="text-xs text-text-muted/50 font-medium">
+          {[
+            shotsTaken > 0 && `${shotsTaken} shot${shotsTaken > 1 ? 's' : ''}`,
+            sipsTaken > 0 && `${sipsTaken} sip${sipsTaken > 1 ? 's' : ''}`,
+          ].filter(Boolean).join(', ')}{' '}
+          cleared
+        </div>
+      )}
     </div>
   )
 }
