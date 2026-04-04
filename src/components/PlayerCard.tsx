@@ -41,6 +41,8 @@ export default function PlayerCard({
   const [drinkBurst, setDrinkBurst] = useState<string | null>(null)
   const prevDrinks = useRef(player.shotsTaken + player.sipsTaken)
 
+  const [confirmRemove, setConfirmRemove] = useState(false)
+
   // Editable name state
   const [isEditingName, setIsEditingName] = useState(false)
   const [editName, setEditName] = useState(player.name)
@@ -220,6 +222,33 @@ export default function PlayerCard({
             </div>
           )}
           <RoundWinButton winnerId={player.id} allPlayers={allPlayers} dispatch={dispatch} />
+          {confirmRemove ? (
+            <div className="flex items-center gap-1 animate-slide-up">
+              <button
+                onClick={() => dispatch({ type: 'REMOVE_PLAYER', playerId: player.id })}
+                className="h-7 px-2.5 rounded-lg text-[10px] font-black transition-all active:scale-90"
+                style={{ color: '#ED1C24', background: 'rgba(237,28,36,0.15)', border: '1px solid rgba(237,28,36,0.30)' }}
+              >
+                Remove
+              </button>
+              <button
+                onClick={() => setConfirmRemove(false)}
+                className="text-text-muted text-xs px-1 hover:text-text-primary transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirmRemove(true)}
+              className="w-6 h-6 rounded-md flex items-center justify-center text-text-muted/40 hover:text-[#ED1C24] hover:bg-[#ED1C24]/10 transition-all"
+              title="Remove player"
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 

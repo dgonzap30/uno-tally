@@ -6,6 +6,7 @@ import { rankPlayers } from '../utils/playerStats'
 import PlayerCard from './PlayerCard'
 import GameStatsBar from './GameStatsBar'
 import DrinkStatsPanel from './DrinkStatsPanel'
+import AddPlayerInline from './AddPlayerInline'
 
 interface GameBoardProps {
   state: GameState
@@ -26,6 +27,7 @@ function getGridClass(count: number): string {
 export default function GameBoard({ state, dispatch }: GameBoardProps) {
   const rankings = rankPlayers(state.players)
   const [drinkPanelOpen, setDrinkPanelOpen] = useState(false)
+  const [showAddPlayer, setShowAddPlayer] = useState(false)
 
   const manyPlayers = state.players.length > 4
 
@@ -68,6 +70,29 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
                 manyPlayers={manyPlayers}
               />
             ))}
+          </div>
+
+          {/* Add player inline */}
+          <div className="mt-3 max-w-sm mx-auto">
+            {showAddPlayer ? (
+              <AddPlayerInline
+                existingNames={state.players.map(p => p.name)}
+                onAdd={(name) => { dispatch({ type: 'ADD_PLAYER', name }); setShowAddPlayer(false) }}
+                onCancel={() => setShowAddPlayer(false)}
+              />
+            ) : (
+              <button
+                onClick={() => setShowAddPlayer(true)}
+                className="w-full h-10 rounded-xl text-sm font-bold transition-all active:scale-95"
+                style={{
+                  color: 'var(--color-text-muted)',
+                  background: 'rgba(28,28,36,0.4)',
+                  border: '2px dashed rgba(255,255,255,0.08)',
+                }}
+              >
+                + Add Player
+              </button>
+            )}
           </div>
         </div>
 

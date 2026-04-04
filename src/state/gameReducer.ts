@@ -73,12 +73,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, players: [...state.players, newPlayer] }
     }
 
-    case 'REMOVE_PLAYER':
-      return {
-        ...state,
-        players: state.players.filter(p => p.id !== action.playerId),
-        roundSubmissions: state.roundSubmissions.filter(id => id !== action.playerId),
-      }
+    case 'REMOVE_PLAYER': {
+      const remainingPlayers = state.players.filter(p => p.id !== action.playerId)
+      const remainingSubmissions = state.roundSubmissions.filter(id => id !== action.playerId)
+      const roundState = state.phase === 'playing'
+        ? advanceIfComplete(remainingPlayers, remainingSubmissions, state.currentRound)
+        : { currentRound: state.currentRound, roundSubmissions: remainingSubmissions }
+      return { ...state, players: remainingPlayers, ...roundState }
+    }
 
     case 'START_GAME':
       return { ...state, phase: 'playing', roundSubmissions: [] }
