@@ -3,18 +3,18 @@ import type { Player } from '../types/game'
 import type { GameAction } from '../state/gameReducer'
 import { getPlayerColor } from '../state/gameReducer'
 
-interface RoundWinButtonProps {
-  winnerId: string
+interface WinButtonProps {
+  playerId: string
   allPlayers: Player[]
   dispatch: React.Dispatch<GameAction>
 }
 
-export default function RoundWinButton({ winnerId, allPlayers, dispatch }: RoundWinButtonProps) {
+export default function WinButton({ playerId, allPlayers, dispatch }: WinButtonProps) {
   const [picking, setPicking] = useState(false)
-  const opponents = allPlayers.filter(p => p.id !== winnerId)
+  const opponents = allPlayers.filter(p => p.id !== playerId)
 
   const handleWin = (loserId: string) => {
-    dispatch({ type: 'WIN_ROUND', winnerId, loserId })
+    dispatch({ type: 'ADD_WIN_PENALTY', loserId })
     setPicking(false)
   }
 
@@ -32,7 +32,7 @@ export default function RoundWinButton({ winnerId, allPlayers, dispatch }: Round
         style={{ ...btnStyle, fontFamily: 'var(--font-display)', color: '#00A651' }}
         title={`+50 pts to ${opponents[0].name}`}
       >
-        WON
+        +50
       </button>
     )
   }
@@ -44,7 +44,7 @@ export default function RoundWinButton({ winnerId, allPlayers, dispatch }: Round
         className="shrink-0 h-9 px-4 rounded-xl text-sm font-black transition-all active:scale-90"
         style={{ ...btnStyle, fontFamily: 'var(--font-display)', color: '#00A651' }}
       >
-        WON
+        +50
       </button>
 
       {picking && (
@@ -65,7 +65,7 @@ export default function RoundWinButton({ winnerId, allPlayers, dispatch }: Round
               <h3 className="text-base font-black" style={{ fontFamily: 'var(--font-display)' }}>
                 Who gets +50?
               </h3>
-              <p className="text-xs text-text-muted mt-0.5">Select the player who lost the round</p>
+              <p className="text-xs text-text-muted mt-0.5">Select the player who lost</p>
             </div>
 
             <div className="px-3 pb-3 space-y-1.5 max-h-[50vh] overflow-y-auto">

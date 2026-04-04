@@ -18,9 +18,9 @@ export function useUndoStack(
   }, [currentState])
 
   const dispatchWithUndo = useCallback((action: GameAction) => {
-    if (action.type === 'ADD_SCORE' || action.type === 'WIN_ROUND') {
+    if (action.type === 'ADD_SCORE' || action.type === 'ADD_WIN_PENALTY') {
       snapshotRef.current = stateRef.current
-      setUndoLabel(action.type === 'WIN_ROUND' ? 'Round won' : 'Score added')
+      setUndoLabel(action.type === 'ADD_WIN_PENALTY' ? '+50 penalty added' : 'Score added')
       clearTimeout(timerRef.current)
       timerRef.current = setTimeout(() => {
         setUndoLabel(null)

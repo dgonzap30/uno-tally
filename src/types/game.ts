@@ -2,13 +2,12 @@ export interface Player {
   id: string
   name: string
   totalPoints: number
-  roundHistory: RoundEntry[]
+  history: HistoryEntry[]
   shotsTaken: number
   sipsTaken: number
 }
 
-export interface RoundEntry {
-  round: number
+export interface HistoryEntry {
   pointsAdded: number
   source: 'score' | 'win-bonus' | 'drink-shot' | 'drink-sip'
   timestamp: number
@@ -17,6 +16,4 @@ export interface RoundEntry {
 export interface GameState {
   phase: 'setup' | 'playing'
   players: Player[]
-  currentRound: number
-  roundSubmissions: string[]
 }

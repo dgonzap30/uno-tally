@@ -1,13 +1,12 @@
 import { useState } from 'react'
 
 interface HeaderProps {
-  currentRound: number
   phase: 'setup' | 'playing'
   onReset: () => void
   onLeave?: () => void
 }
 
-export default function Header({ currentRound, phase, onReset, onLeave }: HeaderProps) {
+export default function Header({ phase, onReset, onLeave }: HeaderProps) {
   const [showConfirm, setShowConfirm] = useState(false)
 
   return (
@@ -39,20 +38,6 @@ export default function Header({ currentRound, phase, onReset, onLeave }: Header
             >
               UNO TALLY
             </h1>
-            {phase === 'playing' && (
-              <span
-                className="text-xs font-black px-3 py-1 rounded-full"
-                style={{
-                  background: 'rgba(9, 86, 191, 0.20)',
-                  color: '#4d94ff',
-                  border: '1px solid rgba(9, 86, 191, 0.35)',
-                  fontFamily: 'var(--font-display)',
-                  fontWeight: 800,
-                }}
-              >
-                R{currentRound}
-              </span>
-            )}
           </div>
           {phase === 'playing' && (
             <button

@@ -4,7 +4,7 @@ import type { GameAction } from '../state/gameReducer'
 import { computeStats, formatRelativeTime } from '../utils/playerStats'
 import DrinkTracker from './DrinkTracker'
 import ScoreEntry from './ScoreEntry'
-import RoundWinButton from './RoundWinButton'
+import WinButton from './WinButton'
 
 interface PlayerCardProps {
   player: Player
@@ -213,7 +213,7 @@ export default function PlayerCard({
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <RoundWinButton winnerId={player.id} allPlayers={allPlayers} dispatch={dispatch} />
+          <WinButton playerId={player.id} allPlayers={allPlayers} dispatch={dispatch} />
           {confirmRemove ? (
             <div className="flex items-center gap-1 animate-slide-up">
               <button

@@ -37,7 +37,6 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
       <div className="shrink-0 px-2.5 sm:px-4 pt-1 pb-0.5">
         <GameStatsBar
           players={state.players}
-          currentRound={state.currentRound}
           onAddPlayer={() => setShowAddPlayer(true)}
         />
       </div>

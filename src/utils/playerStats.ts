@@ -17,8 +17,8 @@ export function computeStats(player: Player): Omit<DerivedStats, 'rank'> {
   const remainder = player.totalPoints % 10
   const ptsUntilNextSip = remainder === 0 ? 0 : 10 - remainder
 
-  const lastEntry = player.roundHistory.length > 0
-    ? player.roundHistory[player.roundHistory.length - 1]
+  const lastEntry = player.history.length > 0
+    ? player.history[player.history.length - 1]
     : null
 
   let lastAction: string | null = null
@@ -28,7 +28,7 @@ export function computeStats(player: Player): Omit<DerivedStats, 'rank'> {
         lastAction = `+${lastEntry.pointsAdded} pts`
         break
       case 'win-bonus':
-        lastAction = '+50 bonus'
+        lastAction = '+50 penalty'
         break
       case 'drink-shot':
         lastAction = 'took shot'

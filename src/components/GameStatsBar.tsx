@@ -2,30 +2,16 @@ import type { Player } from '../types/game'
 
 interface GameStatsBarProps {
   players: Player[]
-  currentRound: number
   onAddPlayer: () => void
 }
 
-export default function GameStatsBar({ players, currentRound, onAddPlayer }: GameStatsBarProps) {
+export default function GameStatsBar({ players, onAddPlayer }: GameStatsBarProps) {
   const sorted = [...players].sort((a, b) => a.totalPoints - b.totalPoints)
   const totalShots = players.reduce((s, p) => s + p.shotsTaken, 0)
   const totalSips = players.reduce((s, p) => s + p.sipsTaken, 0)
 
   return (
     <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
-      {/* Round badge */}
-      <span
-        className="shrink-0 text-sm font-black px-2.5 py-1 rounded-lg"
-        style={{
-          fontFamily: 'var(--font-display)',
-          color: '#4d94ff',
-          background: 'rgba(9,86,191,0.12)',
-          border: '1px solid rgba(9,86,191,0.25)',
-        }}
-      >
-        R{currentRound}
-      </span>
-
       {/* Leaderboard chips */}
       {sorted.map((p, i) => {
         const isLeader = i === 0

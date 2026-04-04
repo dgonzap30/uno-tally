@@ -65,7 +65,6 @@ function SoloGame({ onLeave }: { onLeave: () => void }) {
   return (
     <div className="min-h-dvh">
       <Header
-        currentRound={state.currentRound}
         phase={state.phase}
         onReset={() => dispatch({ type: 'RESET_GAME' })}
         onLeave={onLeave}
@@ -87,7 +86,6 @@ function OnlineGame({ room, onLeave }: { room: string; onLeave: () => void }) {
   return (
     <div className="min-h-dvh">
       <Header
-        currentRound={state.currentRound}
         phase={state.phase}
         onReset={() => dispatch({ type: 'RESET_GAME' })}
         onLeave={onLeave}

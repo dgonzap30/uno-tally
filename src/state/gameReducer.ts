@@ -5,7 +5,7 @@ export type GameAction =
   | { type: 'REMOVE_PLAYER'; playerId: string }
   | { type: 'START_GAME' }
   | { type: 'ADD_SCORE'; playerId: string; points: number }
-  | { type: 'WIN_ROUND'; winnerId: string; loserId: string }
+  | { type: 'ADD_WIN_PENALTY'; loserId: string }
   | { type: 'TAKE_SHOT'; playerId: string }
   | { type: 'TAKE_SIP'; playerId: string }
   | { type: 'RENAME_PLAYER'; playerId: string; name: string }
@@ -15,8 +15,6 @@ export type GameAction =
 export const initialState: GameState = {
   phase: 'setup',
   players: [],
-  currentRound: 1,
-  roundSubmissions: [],
 }
 
 const PLAYER_COLORS = ['#ED1C24', '#0956BF', '#00A651', '#FFDE00', '#ED1C24', '#0956BF']
@@ -25,23 +23,19 @@ export function getPlayerColor(index: number): string {
   return PLAYER_COLORS[index % PLAYER_COLORS.length]
 }
 
-export function getPlayerTextColor(index: number): string {
-  const color = getPlayerColor(index)
-  return color === '#FFDE00' ? '#1a1a2e' : '#ffffff'
-}
-
 export function migrateState(saved: unknown): GameState {
   const state = saved as Record<string, unknown>
-  const players = (state.players as Player[]).map(p => ({
-    ...p,
-    shotsTaken: p.shotsTaken ?? 0,
-    sipsTaken: p.sipsTaken ?? 0,
+  const players = ((state.players ?? []) as Record<string, unknown>[]).map(p => ({
+    id: p.id as string,
+    name: p.name as string,
+    totalPoints: (p.totalPoints as number) ?? 0,
+    history: ((p.history ?? p.roundHistory ?? []) as unknown[]) as Player['history'],
+    shotsTaken: (p.shotsTaken as number) ?? 0,
+    sipsTaken: (p.sipsTaken as number) ?? 0,
   }))
   return {
-    phase: state.phase as 'setup' | 'playing',
+    phase: (state.phase as 'setup' | 'playing') ?? 'setup',
     players,
-    currentRound: state.currentRound as number,
-    roundSubmissions: (state.roundSubmissions as string[] | undefined) ?? [],
   }
 }
 
@@ -54,7 +48,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         id: crypto.randomUUID(),
         name: action.name,
         totalPoints: 0,
-        roundHistory: [],
+        history: [],
         shotsTaken: 0,
         sipsTaken: 0,
       }
@@ -68,9 +62,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
 
     case 'START_GAME':
-      return { ...state, phase: 'playing', roundSubmissions: [] }
+      return { ...state, phase: 'playing' }
 
-    case 'ADD_SCORE': {
+    case 'ADD_SCORE':
       return {
         ...state,
         players: state.players.map(p =>
@@ -78,36 +72,25 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             ? {
                 ...p,
                 totalPoints: p.totalPoints + action.points,
-                roundHistory: [
-                  ...p.roundHistory,
-                  { round: state.currentRound, pointsAdded: action.points, source: 'score' as const, timestamp },
-                ],
+                history: [...p.history, { pointsAdded: action.points, source: 'score' as const, timestamp }],
               }
             : p
         ),
       }
-    }
 
-    case 'WIN_ROUND': {
-      const updatedPlayers = state.players.map(p =>
-        p.id === action.loserId
-          ? {
-              ...p,
-              totalPoints: p.totalPoints + 50,
-              roundHistory: [
-                ...p.roundHistory,
-                { round: state.currentRound, pointsAdded: 50, source: 'win-bonus' as const, timestamp },
-              ],
-            }
-          : p
-      )
+    case 'ADD_WIN_PENALTY':
       return {
         ...state,
-        players: updatedPlayers,
-        currentRound: state.currentRound + 1,
-        roundSubmissions: [],
+        players: state.players.map(p =>
+          p.id === action.loserId
+            ? {
+                ...p,
+                totalPoints: p.totalPoints + 50,
+                history: [...p.history, { pointsAdded: 50, source: 'win-bonus' as const, timestamp }],
+              }
+            : p
+        ),
       }
-    }
 
     case 'TAKE_SHOT':
       return {
@@ -118,10 +101,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 ...p,
                 totalPoints: p.totalPoints - 100,
                 shotsTaken: p.shotsTaken + 1,
-                roundHistory: [
-                  ...p.roundHistory,
-                  { round: state.currentRound, pointsAdded: -100, source: 'drink-shot' as const, timestamp },
-                ],
+                history: [...p.history, { pointsAdded: -100, source: 'drink-shot' as const, timestamp }],
               }
             : p
         ),
@@ -136,10 +116,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 ...p,
                 totalPoints: p.totalPoints - 10,
                 sipsTaken: p.sipsTaken + 1,
-                roundHistory: [
-                  ...p.roundHistory,
-                  { round: state.currentRound, pointsAdded: -10, source: 'drink-sip' as const, timestamp },
-                ],
+                history: [...p.history, { pointsAdded: -10, source: 'drink-sip' as const, timestamp }],
               }
             : p
         ),
