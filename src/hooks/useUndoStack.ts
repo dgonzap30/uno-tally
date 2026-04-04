@@ -8,7 +8,7 @@ export function useUndoStack(
   currentState: GameState,
   dispatch: React.Dispatch<GameAction>,
 ) {
-  const [canUndo, setCanUndo] = useState(false)
+  const [undoLabel, setUndoLabel] = useState<string | null>(null)
   const snapshotRef = useRef<GameState | null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const stateRef = useRef(currentState)
@@ -20,10 +20,10 @@ export function useUndoStack(
   const dispatchWithUndo = useCallback((action: GameAction) => {
     if (action.type === 'ADD_SCORE' || action.type === 'WIN_ROUND') {
       snapshotRef.current = stateRef.current
-      setCanUndo(true)
+      setUndoLabel(action.type === 'WIN_ROUND' ? 'Round won' : 'Score added')
       clearTimeout(timerRef.current)
       timerRef.current = setTimeout(() => {
-        setCanUndo(false)
+        setUndoLabel(null)
         snapshotRef.current = null
       }, UNDO_WINDOW_MS)
     }
@@ -34,10 +34,10 @@ export function useUndoStack(
     if (snapshotRef.current) {
       dispatch({ type: 'LOAD_STATE', state: snapshotRef.current })
       snapshotRef.current = null
-      setCanUndo(false)
+      setUndoLabel(null)
       clearTimeout(timerRef.current)
     }
   }, [dispatch])
 
-  return { dispatchWithUndo, undo, canUndo }
+  return { dispatchWithUndo, undo, canUndo: undoLabel !== null, undoLabel }
 }

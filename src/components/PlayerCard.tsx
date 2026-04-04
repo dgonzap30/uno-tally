@@ -121,7 +121,7 @@ export default function PlayerCard({
 
   return (
     <div
-      className={`relative rounded-2xl flex flex-col animate-card-enter overflow-hidden
+      className={`relative rounded-2xl flex flex-col animate-card-enter overflow-clip
         ${dangerRing}`}
       style={{
         background: getDangerBg(stats.dangerLevel, color),

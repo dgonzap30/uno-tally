@@ -30,18 +30,6 @@ export function getPlayerTextColor(index: number): string {
   return color === '#FFDE00' ? '#1a1a2e' : '#ffffff'
 }
 
-function advanceIfComplete(
-  players: Player[],
-  submissions: string[],
-  currentRound: number,
-): { currentRound: number; roundSubmissions: string[] } {
-  const allSubmitted = players.every(p => submissions.includes(p.id))
-  if (allSubmitted) {
-    return { currentRound: currentRound + 1, roundSubmissions: [] }
-  }
-  return { currentRound, roundSubmissions: submissions }
-}
-
 export function migrateState(saved: unknown): GameState {
   const state = saved as Record<string, unknown>
   const players = (state.players as Player[]).map(p => ({
@@ -73,14 +61,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, players: [...state.players, newPlayer] }
     }
 
-    case 'REMOVE_PLAYER': {
-      const remainingPlayers = state.players.filter(p => p.id !== action.playerId)
-      const remainingSubmissions = state.roundSubmissions.filter(id => id !== action.playerId)
-      const roundState = state.phase === 'playing'
-        ? advanceIfComplete(remainingPlayers, remainingSubmissions, state.currentRound)
-        : { currentRound: state.currentRound, roundSubmissions: remainingSubmissions }
-      return { ...state, players: remainingPlayers, ...roundState }
-    }
+    case 'REMOVE_PLAYER':
+      return {
+        ...state,
+        players: state.players.filter(p => p.id !== action.playerId),
+      }
 
     case 'START_GAME':
       return { ...state, phase: 'playing', roundSubmissions: [] }

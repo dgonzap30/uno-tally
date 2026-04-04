@@ -22,8 +22,8 @@ function getInitialMode(): AppMode {
   return { type: 'choosing' }
 }
 
-function UndoToast({ canUndo, onUndo }: { canUndo: boolean; onUndo: () => void }) {
-  if (!canUndo) return null
+function UndoToast({ label, onUndo }: { label: string | null; onUndo: () => void }) {
+  if (!label) return null
   return (
     <div
       className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 px-6 py-3.5 rounded-2xl animate-slide-up"
@@ -35,7 +35,7 @@ function UndoToast({ canUndo, onUndo }: { canUndo: boolean; onUndo: () => void }
         boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
       }}
     >
-      <span className="text-sm text-text-secondary font-medium">Score added</span>
+      <span className="text-sm text-text-secondary font-medium">{label}</span>
       <button onClick={onUndo} className="text-sm font-black transition-colors" style={{ color: '#0956BF' }}>
         Undo
       </button>
@@ -54,7 +54,7 @@ function SoloGame({ onLeave }: { onLeave: () => void }) {
     return initialState
   })
 
-  const { dispatchWithUndo, undo, canUndo } = useUndoStack(state, dispatch)
+  const { dispatchWithUndo, undo, undoLabel } = useUndoStack(state, dispatch)
 
   useEffect(() => {
     try {
@@ -75,14 +75,14 @@ function SoloGame({ onLeave }: { onLeave: () => void }) {
       ) : (
         <GameBoard state={state} dispatch={dispatchWithUndo} />
       )}
-      <UndoToast canUndo={canUndo} onUndo={undo} />
+      <UndoToast label={undoLabel} onUndo={undo} />
     </div>
   )
 }
 
 function OnlineGame({ room, onLeave }: { room: string; onLeave: () => void }) {
   const { state, dispatch, status, peerCount } = useMultiplayer(room)
-  const { dispatchWithUndo, undo, canUndo } = useUndoStack(state, dispatch)
+  const { dispatchWithUndo, undo, undoLabel } = useUndoStack(state, dispatch)
 
   return (
     <div className="min-h-dvh">
@@ -98,7 +98,7 @@ function OnlineGame({ room, onLeave }: { room: string; onLeave: () => void }) {
       ) : (
         <GameBoard state={state} dispatch={dispatchWithUndo} />
       )}
-      <UndoToast canUndo={canUndo} onUndo={undo} />
+      <UndoToast label={undoLabel} onUndo={undo} />
     </div>
   )
 }
