@@ -46,6 +46,7 @@ export default function PlayerCard({
   const [isEditingName, setIsEditingName] = useState(false)
   const [editName, setEditName] = useState(player.name)
   const nameInputRef = useRef<HTMLInputElement>(null)
+  const blurReady = useRef(false)
 
   useEffect(() => {
     if (!isEditingName) setEditName(player.name)
@@ -53,8 +54,11 @@ export default function PlayerCard({
 
   useEffect(() => {
     if (isEditingName) {
+      blurReady.current = false
       nameInputRef.current?.focus()
       nameInputRef.current?.select()
+      const t = setTimeout(() => { blurReady.current = true }, 200)
+      return () => clearTimeout(t)
     }
   }, [isEditingName])
 
@@ -187,7 +191,7 @@ export default function PlayerCard({
                 if (e.key === 'Enter') commitRename()
                 if (e.key === 'Escape') cancelRename()
               }}
-              onBlur={commitRename}
+              onBlur={() => { if (blurReady.current) commitRename() }}
               maxLength={20}
               className={`${manyPlayers ? 'text-base' : 'text-lg'} tracking-wide min-w-0 w-full bg-transparent outline-none border-b-2`}
               style={{
@@ -198,13 +202,14 @@ export default function PlayerCard({
               }}
             />
           ) : (
-            <h3
-              className={`${manyPlayers ? 'text-base' : 'text-lg'} tracking-wide truncate min-w-0 cursor-pointer`}
+            <button
+              type="button"
+              className={`${manyPlayers ? 'text-base' : 'text-lg'} tracking-wide truncate min-w-0 text-left bg-transparent border-none p-0`}
               style={{ fontFamily: 'var(--font-display)', color }}
               onClick={() => setIsEditingName(true)}
             >
               {player.name}
-            </h3>
+            </button>
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
