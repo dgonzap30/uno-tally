@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import type { Player } from '../types/game'
 import type { GameAction } from '../state/gameReducer'
 import { computeStats, formatRelativeTime } from '../utils/playerStats'
@@ -41,6 +41,35 @@ export default function PlayerCard({
   const [drinkBurst, setDrinkBurst] = useState<string | null>(null)
   const prevDrinks = useRef(player.shotsTaken + player.sipsTaken)
 
+  // Editable name state
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [editName, setEditName] = useState(player.name)
+  const nameInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (!isEditingName) setEditName(player.name)
+  }, [player.name, isEditingName])
+
+  useEffect(() => {
+    if (isEditingName) {
+      nameInputRef.current?.focus()
+      nameInputRef.current?.select()
+    }
+  }, [isEditingName])
+
+  const commitRename = useCallback(() => {
+    const trimmed = editName.trim()
+    if (trimmed && trimmed !== player.name) {
+      dispatch({ type: 'RENAME_PLAYER', playerId: player.id, name: trimmed })
+    }
+    setIsEditingName(false)
+  }, [editName, player.name, player.id, dispatch])
+
+  const cancelRename = useCallback(() => {
+    setEditName(player.name)
+    setIsEditingName(false)
+  }, [player.name])
+
   const stats = computeStats(player)
   const shotsAvailable = stats.shotsOwed
   const sipsAvailable = stats.sipsOwed
@@ -67,11 +96,17 @@ export default function PlayerCard({
     }
   }, [player.shotsTaken, player.sipsTaken])
 
-  const scoreSize = player.totalPoints >= 1000
-    ? 'text-4xl sm:text-5xl'
-    : player.totalPoints >= 100
-      ? 'text-5xl sm:text-7xl'
-      : 'text-6xl sm:text-8xl'
+  const scoreSize = manyPlayers
+    ? (player.totalPoints >= 1000
+        ? 'text-3xl sm:text-4xl'
+        : player.totalPoints >= 100
+          ? 'text-4xl sm:text-5xl'
+          : 'text-5xl sm:text-6xl')
+    : (player.totalPoints >= 1000
+        ? 'text-4xl sm:text-5xl'
+        : player.totalPoints >= 100
+          ? 'text-5xl sm:text-7xl'
+          : 'text-6xl sm:text-8xl')
 
   const dangerRing = stats.dangerLevel === 'critical'
     ? 'ring-2 ring-[#ED1C24]/30 animate-danger-pulse'
@@ -88,7 +123,6 @@ export default function PlayerCard({
         background: getDangerBg(stats.dangerLevel, color),
         boxShadow: `0 6px 24px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.25)`,
         animationDelay: `${index * 120}ms`,
-        minHeight: manyPlayers ? '300px' : undefined,
         border: `2px solid rgba(255,255,255,0.06)`,
         borderTop: `4px solid ${color}`,
       } as React.CSSProperties}
@@ -118,7 +152,7 @@ export default function PlayerCard({
 
       {/* === Colored top banner === */}
       <div
-        className="card-banner shrink-0 px-3 sm:px-5 py-2.5 sm:py-3 flex items-center justify-between gap-2"
+        className={`card-banner shrink-0 ${manyPlayers ? 'px-2.5 sm:px-4 py-1.5 sm:py-2' : 'px-3 sm:px-5 py-2.5 sm:py-3'} flex items-center justify-between gap-2`}
         style={{
           background: `linear-gradient(135deg, ${color}20 0%, ${color}08 100%)`,
           borderBottom: `2px solid ${color}25`,
@@ -127,7 +161,7 @@ export default function PlayerCard({
         <div className="relative flex items-center gap-3 min-w-0">
           {/* Rank badge */}
           <div
-            className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black"
+            className={`shrink-0 ${manyPlayers ? 'w-6 h-6 rounded-md text-[10px]' : 'w-8 h-8 rounded-lg text-xs'} flex items-center justify-center font-black`}
             style={{
               background: rank === 1 ? '#00A651' :
                           rank === totalPlayers && totalPlayers > 1 ? '#ED1C24' :
@@ -142,12 +176,35 @@ export default function PlayerCard({
           >
             {rank}
           </div>
-          <h3
-            className="text-lg tracking-wide truncate min-w-0"
-            style={{ fontFamily: 'var(--font-display)', color }}
-          >
-            {player.name}
-          </h3>
+          {isEditingName ? (
+            <input
+              ref={nameInputRef}
+              type="text"
+              value={editName}
+              onChange={e => setEditName(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') commitRename()
+                if (e.key === 'Escape') cancelRename()
+              }}
+              onBlur={commitRename}
+              maxLength={20}
+              className={`${manyPlayers ? 'text-base' : 'text-lg'} tracking-wide min-w-0 w-full bg-transparent outline-none border-b-2`}
+              style={{
+                fontFamily: 'var(--font-display)',
+                color,
+                borderColor: `${color}60`,
+                caretColor: color,
+              }}
+            />
+          ) : (
+            <h3
+              className={`${manyPlayers ? 'text-base' : 'text-lg'} tracking-wide truncate min-w-0 cursor-pointer`}
+              style={{ fontFamily: 'var(--font-display)', color }}
+              onClick={() => setIsEditingName(true)}
+            >
+              {player.name}
+            </h3>
+          )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {hasSubmitted && (
@@ -167,7 +224,7 @@ export default function PlayerCard({
       </div>
 
       {/* === Score zone — the hero === */}
-      <div className="flex flex-col items-start px-4 sm:px-6 py-3 sm:py-5">
+      <div className={`flex flex-col items-start ${manyPlayers ? 'px-3 sm:px-4 py-2 sm:py-3' : 'px-4 sm:px-6 py-3 sm:py-5'}`}>
         <div className="flex items-baseline gap-2.5">
           <span
             className={`score-display ${scoreSize} ${animating ? 'animate-score-slam' : ''}`}
@@ -206,7 +263,7 @@ export default function PlayerCard({
       </div>
 
       {/* === Bottom section: tracker + actions === */}
-      <div className="shrink-0 px-3 sm:px-5 pb-3 sm:pb-4 space-y-2.5">
+      <div className={`shrink-0 ${manyPlayers ? 'px-2.5 sm:px-4 pb-2.5 sm:pb-3 space-y-2' : 'px-3 sm:px-5 pb-3 sm:pb-4 space-y-2.5'}`}>
         <DrinkTracker
           totalPoints={player.totalPoints}
           shotsTaken={player.shotsTaken}
@@ -223,7 +280,7 @@ export default function PlayerCard({
           <div className="flex gap-2">
             <button
               onClick={() => setScoreExpanded(true)}
-              className="flex-1 h-11 sm:h-12 rounded-xl text-sm sm:text-base font-black transition-all active:scale-93"
+              className={`flex-1 ${manyPlayers ? 'h-9 sm:h-10' : 'h-11 sm:h-12'} rounded-xl text-sm sm:text-base font-black transition-all active:scale-93`}
               style={{
                 fontFamily: 'var(--font-display)',
                 background: `linear-gradient(180deg, rgba(9,86,191,0.18) 0%, rgba(9,86,191,0.08) 100%)`,
@@ -237,7 +294,7 @@ export default function PlayerCard({
             <button
               onClick={() => dispatch({ type: 'TAKE_SIP', playerId: player.id })}
               disabled={sipsAvailable <= 0}
-              className={`drink-btn h-11 sm:h-12 px-4 sm:px-5 rounded-xl text-sm font-black uppercase tracking-wide ${
+              className={`drink-btn ${manyPlayers ? 'h-9 sm:h-10 px-3 sm:px-4' : 'h-11 sm:h-12 px-4 sm:px-5'} rounded-xl text-sm font-black uppercase tracking-wide ${
                 sipsAvailable <= 0 ? 'text-text-muted/40 cursor-default' : ''
               }`}
               style={sipsAvailable > 0 ? {
@@ -255,7 +312,7 @@ export default function PlayerCard({
             <button
               onClick={() => dispatch({ type: 'TAKE_SHOT', playerId: player.id })}
               disabled={shotsAvailable <= 0}
-              className={`drink-btn h-11 sm:h-12 px-4 sm:px-5 rounded-xl text-sm font-black uppercase tracking-wide ${
+              className={`drink-btn ${manyPlayers ? 'h-9 sm:h-10 px-3 sm:px-4' : 'h-11 sm:h-12 px-4 sm:px-5'} rounded-xl text-sm font-black uppercase tracking-wide ${
                 shotsAvailable <= 0 ? 'text-text-muted/40 cursor-default' : ''
               }`}
               style={shotsAvailable > 0 ? {

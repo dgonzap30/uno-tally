@@ -8,6 +8,7 @@ export type GameAction =
   | { type: 'WIN_ROUND'; winnerId: string; loserId: string }
   | { type: 'TAKE_SHOT'; playerId: string }
   | { type: 'TAKE_SIP'; playerId: string }
+  | { type: 'RENAME_PLAYER'; playerId: string; name: string }
   | { type: 'RESET_GAME' }
   | { type: 'LOAD_STATE'; state: GameState }
 
@@ -155,6 +156,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
                 ],
               }
             : p
+        ),
+      }
+
+    case 'RENAME_PLAYER':
+      return {
+        ...state,
+        players: state.players.map(p =>
+          p.id === action.playerId ? { ...p, name: action.name } : p
         ),
       }
 
