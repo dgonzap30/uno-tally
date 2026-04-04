@@ -3,90 +3,85 @@ import type { Player } from '../types/game'
 interface GameStatsBarProps {
   players: Player[]
   currentRound: number
+  onAddPlayer: () => void
 }
 
-export default function GameStatsBar({ players, currentRound }: GameStatsBarProps) {
+export default function GameStatsBar({ players, currentRound, onAddPlayer }: GameStatsBarProps) {
   const sorted = [...players].sort((a, b) => a.totalPoints - b.totalPoints)
   const totalShots = players.reduce((s, p) => s + p.shotsTaken, 0)
   const totalSips = players.reduce((s, p) => s + p.sipsTaken, 0)
 
   return (
-    <div className="rounded-2xl overflow-hidden max-w-5xl mx-auto" style={{
-      background: 'linear-gradient(180deg, rgba(28,28,36,0.90) 0%, rgba(24,24,32,0.95) 100%)',
-      border: '2px solid rgba(255,255,255,0.06)',
-      boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-    }}>
-      {/* Round header with progress */}
-      <div className="flex items-center justify-between px-3.5 sm:px-5 py-2.5 sm:py-3.5" style={{
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
-        background: 'linear-gradient(90deg, rgba(9,86,191,0.06) 0%, transparent 50%, rgba(0,166,81,0.06) 100%)',
-      }}>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2.5">
-            <span
-              className="text-2xl font-black"
-              style={{ fontFamily: 'var(--font-display)', color: '#4d94ff' }}
-            >
-              R{currentRound}
+    <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
+      {/* Round badge */}
+      <span
+        className="shrink-0 text-sm font-black px-2.5 py-1 rounded-lg"
+        style={{
+          fontFamily: 'var(--font-display)',
+          color: '#4d94ff',
+          background: 'rgba(9,86,191,0.12)',
+          border: '1px solid rgba(9,86,191,0.25)',
+        }}
+      >
+        R{currentRound}
+      </span>
+
+      {/* Leaderboard chips */}
+      {sorted.map((p, i) => {
+        const isLeader = i === 0
+        const isLast = i === sorted.length - 1 && sorted.length > 1
+        const accent = isLeader ? '#00A651' : isLast ? '#ED1C24' : 'var(--color-text-secondary)'
+
+        return (
+          <div
+            key={p.id}
+            className="flex items-center gap-1.5 shrink-0 px-2 py-1 rounded-lg"
+            style={{
+              background: isLeader ? 'rgba(0,166,81,0.08)' :
+                           isLast ? 'rgba(237,28,36,0.08)' :
+                           'rgba(255,255,255,0.03)',
+            }}
+          >
+            <span className="font-bold text-xs truncate max-w-[64px]" style={{ color: accent }}>
+              {p.name}
+            </span>
+            <span className="tabular-nums text-xs font-black" style={{ fontFamily: 'var(--font-score)', color: accent }}>
+              {p.totalPoints}
             </span>
           </div>
-          <span className="text-xs text-text-muted font-bold">
-            {players.length} player{players.length !== 1 ? 's' : ''}
-          </span>
+        )
+      })}
+
+      {/* Drink totals (compact) */}
+      {(totalShots > 0 || totalSips > 0) && (
+        <div className="flex items-center gap-1.5 shrink-0 ml-auto">
+          {totalShots > 0 && (
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ color: '#ED1C24', background: 'rgba(237,28,36,0.10)' }}>
+              {totalShots}🥃
+            </span>
+          )}
+          {totalSips > 0 && (
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded" style={{ color: '#FFDE00', background: 'rgba(255,222,0,0.10)' }}>
+              {totalSips}🍺
+            </span>
+          )}
         </div>
-        {(totalShots > 0 || totalSips > 0) && (
-          <div className="flex items-center gap-2 text-sm">
-            {totalShots > 0 && (
-              <span className="font-bold px-2 py-0.5 rounded-md"
-                style={{ color: '#ED1C24', background: 'rgba(237,28,36,0.10)' }}>
-                {totalShots} shot{totalShots !== 1 ? 's' : ''}
-              </span>
-            )}
-            {totalSips > 0 && (
-              <span className="font-bold px-2 py-0.5 rounded-md"
-                style={{ color: '#FFDE00', background: 'rgba(255,222,0,0.10)' }}>
-                {totalSips} sip{totalSips !== 1 ? 's' : ''}
-              </span>
-            )}
-            <span className="text-text-muted/50 text-xs">taken</span>
-          </div>
-        )}
-      </div>
+      )}
 
-      {/* Leaderboard strip */}
-      <div className="flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-3 overflow-x-auto scrollbar-none">
-        {sorted.map((p, i) => {
-          const isLeader = i === 0
-          const isLast = i === sorted.length - 1 && sorted.length > 1
-          const accentColor = isLeader ? '#00A651' : isLast ? '#ED1C24' : '#ffffff'
-
-          return (
-            <div
-              key={p.id}
-              className="flex items-center gap-2 shrink-0 px-3 py-1.5 rounded-lg transition-colors"
-              style={{
-                background: isLeader ? 'rgba(0,166,81,0.10)' :
-                             isLast ? 'rgba(237,28,36,0.10)' :
-                             'rgba(255,255,255,0.03)',
-                border: `1px solid ${isLeader ? 'rgba(0,166,81,0.20)' : isLast ? 'rgba(237,28,36,0.20)' : 'transparent'}`,
-              }}
-            >
-              <span
-                className="font-bold text-sm truncate max-w-[72px]"
-                style={{ color: isLeader || isLast ? accentColor : 'var(--color-text-secondary)' }}
-              >
-                {p.name}
-              </span>
-              <span
-                className="tabular-nums text-sm font-black"
-                style={{ fontFamily: 'var(--font-score)', color: isLeader || isLast ? accentColor : 'var(--color-text-muted)' }}
-              >
-                {p.totalPoints}
-              </span>
-            </div>
-          )
-        })}
-      </div>
+      {/* Add player button */}
+      <button
+        onClick={onAddPlayer}
+        className="shrink-0 ml-auto w-7 h-7 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary transition-all active:scale-90"
+        style={{
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.08)',
+        }}
+        title="Add player"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+      </button>
     </div>
   )
 }

@@ -13,7 +13,7 @@ export default function Header({ currentRound, phase, onReset, onLeave }: Header
   return (
     <>
       <header
-        className="sticky top-0 z-20 px-3 sm:px-4 py-2 sm:py-3"
+        className="sticky top-0 z-20 px-3 sm:px-4 py-1.5 sm:py-2"
         style={{
           background: 'linear-gradient(180deg, rgba(20, 20, 28, 0.95) 0%, rgba(24, 24, 32, 0.90) 100%)',
           backdropFilter: 'blur(16px)',

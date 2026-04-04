@@ -32,19 +32,33 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
   const manyPlayers = state.players.length > 4
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-52px)] overflow-hidden">
-      {/* Stats bar — always at top */}
-      <div className="shrink-0 px-2.5 sm:px-4 pt-2 pb-1.5">
+    <div className="flex flex-col h-[calc(100dvh-44px)] overflow-hidden">
+      {/* Compact session bar */}
+      <div className="shrink-0 px-2.5 sm:px-4 pt-1 pb-0.5">
         <GameStatsBar
           players={state.players}
           currentRound={state.currentRound}
+          onAddPlayer={() => setShowAddPlayer(true)}
         />
       </div>
 
-      {/* Main content area — vertical on mobile, horizontal on desktop */}
+      {/* Add player form (slides in below stats bar) */}
+      {showAddPlayer && (
+        <div className="shrink-0 px-2.5 sm:px-4 pb-1.5">
+          <div className="max-w-sm">
+            <AddPlayerInline
+              existingNames={state.players.map(p => p.name)}
+              onAdd={(name) => { dispatch({ type: 'ADD_PLAYER', name }); setShowAddPlayer(false) }}
+              onCancel={() => setShowAddPlayer(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Main content area */}
       <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
         {/* Mobile/tablet: collapsible drink panel */}
-        <div className="shrink-0 px-2.5 sm:px-4 pb-1.5 lg:hidden">
+        <div className="shrink-0 px-2.5 sm:px-4 pb-1 lg:hidden">
           <DrinkStatsPanel
             players={state.players}
             open={drinkPanelOpen}
@@ -68,29 +82,6 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
                 manyPlayers={manyPlayers}
               />
             ))}
-          </div>
-
-          {/* Add player inline */}
-          <div className="mt-3 max-w-sm mx-auto">
-            {showAddPlayer ? (
-              <AddPlayerInline
-                existingNames={state.players.map(p => p.name)}
-                onAdd={(name) => { dispatch({ type: 'ADD_PLAYER', name }); setShowAddPlayer(false) }}
-                onCancel={() => setShowAddPlayer(false)}
-              />
-            ) : (
-              <button
-                onClick={() => setShowAddPlayer(true)}
-                className="w-full h-10 rounded-xl text-sm font-bold transition-all active:scale-95"
-                style={{
-                  color: 'var(--color-text-muted)',
-                  background: 'rgba(28,28,36,0.4)',
-                  border: '2px dashed rgba(255,255,255,0.08)',
-                }}
-              >
-                + Add Player
-              </button>
-            )}
           </div>
         </div>
 
