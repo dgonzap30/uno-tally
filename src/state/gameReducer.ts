@@ -86,23 +86,21 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, phase: 'playing', roundSubmissions: [] }
 
     case 'ADD_SCORE': {
-      const updatedPlayers = state.players.map(p =>
-        p.id === action.playerId
-          ? {
-              ...p,
-              totalPoints: p.totalPoints + action.points,
-              roundHistory: [
-                ...p.roundHistory,
-                { round: state.currentRound, pointsAdded: action.points, source: 'score' as const, timestamp },
-              ],
-            }
-          : p
-      )
-      const newSubmissions = state.roundSubmissions.includes(action.playerId)
-        ? state.roundSubmissions
-        : [...state.roundSubmissions, action.playerId]
-      const roundState = advanceIfComplete(updatedPlayers, newSubmissions, state.currentRound)
-      return { ...state, players: updatedPlayers, ...roundState }
+      return {
+        ...state,
+        players: state.players.map(p =>
+          p.id === action.playerId
+            ? {
+                ...p,
+                totalPoints: p.totalPoints + action.points,
+                roundHistory: [
+                  ...p.roundHistory,
+                  { round: state.currentRound, pointsAdded: action.points, source: 'score' as const, timestamp },
+                ],
+              }
+            : p
+        ),
+      }
     }
 
     case 'WIN_ROUND': {
@@ -118,11 +116,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
             }
           : p
       )
-      const newSubmissions = state.roundSubmissions.includes(action.winnerId)
-        ? state.roundSubmissions
-        : [...state.roundSubmissions, action.winnerId]
-      const roundState = advanceIfComplete(updatedPlayers, newSubmissions, state.currentRound)
-      return { ...state, players: updatedPlayers, ...roundState }
+      return {
+        ...state,
+        players: updatedPlayers,
+        currentRound: state.currentRound + 1,
+        roundSubmissions: [],
+      }
     }
 
     case 'TAKE_SHOT':

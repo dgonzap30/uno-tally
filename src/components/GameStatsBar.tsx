@@ -3,14 +3,12 @@ import type { Player } from '../types/game'
 interface GameStatsBarProps {
   players: Player[]
   currentRound: number
-  submittedCount: number
 }
 
-export default function GameStatsBar({ players, currentRound, submittedCount }: GameStatsBarProps) {
+export default function GameStatsBar({ players, currentRound }: GameStatsBarProps) {
   const sorted = [...players].sort((a, b) => a.totalPoints - b.totalPoints)
   const totalShots = players.reduce((s, p) => s + p.shotsTaken, 0)
   const totalSips = players.reduce((s, p) => s + p.sipsTaken, 0)
-  const inProgress = submittedCount > 0 && submittedCount < players.length
 
   return (
     <div className="rounded-2xl overflow-hidden max-w-5xl mx-auto" style={{
@@ -32,25 +30,9 @@ export default function GameStatsBar({ players, currentRound, submittedCount }: 
               R{currentRound}
             </span>
           </div>
-          {inProgress && (
-            <div className="flex items-center gap-2.5">
-              <div className="flex gap-1.5">
-                {players.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                      i < submittedCount
-                        ? 'bg-[#00A651] shadow-[0_0_6px_rgba(0,166,81,0.4)]'
-                        : 'bg-white/8'
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-xs text-text-muted font-bold tabular-nums">
-                {submittedCount}/{players.length}
-              </span>
-            </div>
-          )}
+          <span className="text-xs text-text-muted font-bold">
+            {players.length} player{players.length !== 1 ? 's' : ''}
+          </span>
         </div>
         {(totalShots > 0 || totalSips > 0) && (
           <div className="flex items-center gap-2 text-sm">

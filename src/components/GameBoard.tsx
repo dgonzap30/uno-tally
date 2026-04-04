@@ -38,7 +38,6 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
         <GameStatsBar
           players={state.players}
           currentRound={state.currentRound}
-          submittedCount={state.roundSubmissions.length}
         />
       </div>
 
@@ -54,7 +53,7 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
         </div>
 
         {/* Player cards grid — scrollable */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-2.5 sm:px-4 pb-3">
+        <div className="flex-1 min-h-0 overflow-y-auto px-2.5 sm:px-4 pb-3" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className={`grid ${manyPlayers ? 'gap-2' : 'gap-2.5 sm:gap-3'} mx-auto ${getGridClass(state.players.length)}`}>
             {state.players.map((player, i) => (
               <PlayerCard
@@ -65,7 +64,6 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
                 index={i}
                 rank={rankings.get(player.id) ?? i + 1}
                 totalPlayers={state.players.length}
-                hasSubmitted={state.roundSubmissions.includes(player.id)}
                 dispatch={dispatch}
                 manyPlayers={manyPlayers}
               />

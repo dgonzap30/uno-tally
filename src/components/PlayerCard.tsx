@@ -13,7 +13,6 @@ interface PlayerCardProps {
   index: number
   rank: number
   totalPlayers: number
-  hasSubmitted: boolean
   dispatch: React.Dispatch<GameAction>
   manyPlayers?: boolean
 }
@@ -32,7 +31,7 @@ function getDangerBg(dangerLevel: string, color: string): string {
 }
 
 export default function PlayerCard({
-  player, allPlayers, color, index, rank, totalPlayers, hasSubmitted, dispatch, manyPlayers,
+  player, allPlayers, color, index, rank, totalPlayers, dispatch, manyPlayers,
 }: PlayerCardProps) {
   const [scoreExpanded, setScoreExpanded] = useState(false)
   const prevPoints = useRef(player.totalPoints)
@@ -119,14 +118,14 @@ export default function PlayerCard({
   return (
     <div
       className={`relative rounded-2xl flex flex-col animate-card-enter overflow-hidden
-        ${dangerRing}
-        ${hasSubmitted ? 'submitted-card' : ''}`}
+        ${dangerRing}`}
       style={{
         background: getDangerBg(stats.dangerLevel, color),
         boxShadow: `0 6px 24px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.25)`,
         animationDelay: `${index * 120}ms`,
         border: `2px solid rgba(255,255,255,0.06)`,
         borderTop: `4px solid ${color}`,
+        touchAction: 'pan-y',
       } as React.CSSProperties}
     >
       {/* === Color flash on score change === */}
@@ -209,18 +208,6 @@ export default function PlayerCard({
           )}
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          {hasSubmitted && (
-            <div className="flex items-center gap-1.5 animate-check-appear">
-              <div
-                className="w-6 h-6 rounded-full flex items-center justify-center"
-                style={{ background: 'rgba(0,166,81,0.15)', boxShadow: '0 0 12px rgba(0,166,81,0.20)' }}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 13l4 4L19 7" stroke="#00A651" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </div>
-          )}
           <RoundWinButton winnerId={player.id} allPlayers={allPlayers} dispatch={dispatch} />
           {confirmRemove ? (
             <div className="flex items-center gap-1 animate-slide-up">

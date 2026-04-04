@@ -8,17 +8,19 @@ interface ScoreEntryProps {
 const QUICK_SCORES = [5, 10, 20, 25, 50]
 
 export default function ScoreEntry({ onSubmit, onClose }: ScoreEntryProps) {
-  const [points, setPoints] = useState<number | ''>('')
+  const [raw, setRaw] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
 
+  const parsed = raw.trim() ? Math.floor(Number(raw)) : 0
+  const isValid = parsed > 0 && Number.isFinite(parsed)
+
   const handleSubmit = () => {
-    if (points && points > 0) {
-      onSubmit(points)
-      setPoints('')
+    if (isValid) {
+      onSubmit(parsed)
       onClose()
     }
   }
@@ -49,14 +51,15 @@ export default function ScoreEntry({ onSubmit, onClose }: ScoreEntryProps) {
           ref={inputRef}
           type="number"
           inputMode="numeric"
-          value={points}
-          onChange={e => setPoints(e.target.value ? parseInt(e.target.value) : '')}
+          value={raw}
+          onChange={e => setRaw(e.target.value)}
           onKeyDown={e => {
             if (e.key === 'Enter') handleSubmit()
             if (e.key === 'Escape') onClose()
           }}
           placeholder="Custom"
           min={1}
+          step={1}
           className="flex-1 h-12 px-4 rounded-xl text-text-primary placeholder:text-text-muted/50 text-base outline-none transition-all"
           style={{
             fontSize: '16px',
@@ -66,7 +69,7 @@ export default function ScoreEntry({ onSubmit, onClose }: ScoreEntryProps) {
         />
         <button
           onClick={handleSubmit}
-          disabled={!points || points <= 0}
+          disabled={!isValid}
           className="h-12 px-6 rounded-xl text-sm font-black disabled:opacity-15 transition-all active:scale-95"
           style={{
             background: 'linear-gradient(180deg, #0956BF 0%, #074da6 100%)',

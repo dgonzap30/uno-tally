@@ -48,7 +48,9 @@ function SoloGame({ onLeave }: { onLeave: () => void }) {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) return migrateState(JSON.parse(saved))
-    } catch { /* ignore */ }
+    } catch {
+      localStorage.removeItem(STORAGE_KEY)
+    }
     return initialState
   })
 
