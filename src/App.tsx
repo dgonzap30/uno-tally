@@ -54,23 +54,23 @@ function SoloGame({ onLeave }: { onLeave: () => void }) {
     return initialState
   })
 
-  const { dispatchWithUndo, undo, undoLabel } = useUndoStack(state, dispatch)
+  const { dispatchWithUndo, undo, undoLabel } = useUndoStack(dispatch)
 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-    } catch { /* ignore */ }
+    } catch { /* ignore quota errors */ }
   }, [state])
 
   return (
-    <div className="min-h-dvh">
+    <div className="h-dvh flex flex-col">
       <Header
         phase={state.phase}
         onReset={() => dispatch({ type: 'RESET_GAME' })}
         onLeave={onLeave}
       />
       {state.phase === 'setup' ? (
-        <GameSetup players={state.players} dispatch={dispatch} />
+        <GameSetup players={state.players} dispatch={dispatchWithUndo} />
       ) : (
         <GameBoard state={state} dispatch={dispatchWithUndo} />
       )}
@@ -81,10 +81,10 @@ function SoloGame({ onLeave }: { onLeave: () => void }) {
 
 function OnlineGame({ room, onLeave }: { room: string; onLeave: () => void }) {
   const { state, dispatch, status, peerCount } = useMultiplayer(room)
-  const { dispatchWithUndo, undo, undoLabel } = useUndoStack(state, dispatch)
+  const { dispatchWithUndo, undo, undoLabel } = useUndoStack(dispatch)
 
   return (
-    <div className="min-h-dvh">
+    <div className="h-dvh flex flex-col">
       <Header
         phase={state.phase}
         onReset={() => dispatch({ type: 'RESET_GAME' })}
@@ -92,7 +92,7 @@ function OnlineGame({ room, onLeave }: { room: string; onLeave: () => void }) {
       />
       <ConnectionStatus status={status} peerCount={peerCount} roomId={room} />
       {state.phase === 'setup' ? (
-        <GameSetup players={state.players} dispatch={dispatch} />
+        <GameSetup players={state.players} dispatch={dispatchWithUndo} />
       ) : (
         <GameBoard state={state} dispatch={dispatchWithUndo} />
       )}

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import type { Player } from '../types/game'
-import type { GameAction } from '../state/gameReducer'
+import type { UIAction } from '../state/gameReducer'
 import { computeStats, formatRelativeTime } from '../utils/playerStats'
 import DrinkTracker from './DrinkTracker'
 import ScoreEntry from './ScoreEntry'
@@ -9,11 +9,10 @@ import WinButton from './WinButton'
 interface PlayerCardProps {
   player: Player
   allPlayers: Player[]
-  color: string
   index: number
   rank: number
   totalPlayers: number
-  dispatch: React.Dispatch<GameAction>
+  dispatch: React.Dispatch<UIAction>
   manyPlayers?: boolean
 }
 
@@ -31,14 +30,18 @@ function getDangerBg(dangerLevel: string, color: string): string {
 }
 
 export default function PlayerCard({
-  player, allPlayers, color, index, rank, totalPlayers, dispatch, manyPlayers,
+  player, allPlayers, index, rank, totalPlayers, dispatch, manyPlayers,
 }: PlayerCardProps) {
+  const color = player.color
   const [scoreExpanded, setScoreExpanded] = useState(false)
   const prevPoints = useRef(player.totalPoints)
   const [animating, setAnimating] = useState(false)
   const [flashing, setFlashing] = useState(false)
   const [drinkBurst, setDrinkBurst] = useState<string | null>(null)
-  const prevDrinks = useRef(player.shotsTaken + player.sipsTaken)
+  const initialLast = player.history[player.history.length - 1]
+  const lastBurstRef = useRef<{ id: string; timestamp: number } | null>(
+    initialLast ? { id: initialLast.id, timestamp: initialLast.timestamp } : null
+  )
 
   const [confirmRemove, setConfirmRemove] = useState(false)
 
@@ -49,6 +52,7 @@ export default function PlayerCard({
   const blurReady = useRef(false)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing external prop into edit buffer while not editing
     if (!isEditingName) setEditName(player.name)
   }, [player.name, isEditingName])
 
@@ -57,8 +61,9 @@ export default function PlayerCard({
       blurReady.current = false
       nameInputRef.current?.focus()
       nameInputRef.current?.select()
-      const t = setTimeout(() => { blurReady.current = true }, 200)
-      return () => clearTimeout(t)
+      // Let the focus/select events settle on the same tick before we'll accept a blur commit.
+      const frame = requestAnimationFrame(() => { blurReady.current = true })
+      return () => cancelAnimationFrame(frame)
     }
   }, [isEditingName])
 
@@ -81,6 +86,7 @@ export default function PlayerCard({
 
   useEffect(() => {
     if (player.totalPoints !== prevPoints.current) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- imperative animation trigger on score change
       setAnimating(true)
       setFlashing(true)
       const t1 = setTimeout(() => setAnimating(false), 700)
@@ -91,15 +97,18 @@ export default function PlayerCard({
   }, [player.totalPoints])
 
   useEffect(() => {
-    const currentDrinks = player.shotsTaken + player.sipsTaken
-    if (currentDrinks > prevDrinks.current) {
-      const wasShot = player.shotsTaken > prevDrinks.current - player.sipsTaken
-      setDrinkBurst(wasShot ? '#ED1C24' : '#FFDE00')
-      const t = setTimeout(() => setDrinkBurst(null), 900)
-      prevDrinks.current = currentDrinks
-      return () => clearTimeout(t)
-    }
-  }, [player.shotsTaken, player.sipsTaken])
+    const last = player.history[player.history.length - 1]
+    if (!last) return
+    const prev = lastBurstRef.current
+    // Skip if same entry (multiplayer echo) or older/equal (undo revealed a prior entry)
+    if (prev && (prev.id === last.id || last.timestamp <= prev.timestamp)) return
+    lastBurstRef.current = { id: last.id, timestamp: last.timestamp }
+    if (last.source !== 'drink-shot' && last.source !== 'drink-sip') return
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- imperative drink celebration trigger
+    setDrinkBurst(last.source === 'drink-shot' ? '#ED1C24' : '#FFDE00')
+    const t = setTimeout(() => setDrinkBurst(null), 900)
+    return () => clearTimeout(t)
+  }, [player.history])
 
   const scoreSize = manyPlayers
     ? (player.totalPoints >= 1000

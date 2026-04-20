@@ -1,5 +1,4 @@
 import type { Player } from '../types/game'
-import { getPlayerColor } from '../state/gameReducer'
 import { computeStats } from '../utils/playerStats'
 
 interface DrinkStatsPanelProps {
@@ -53,9 +52,9 @@ export default function DrinkStatsPanel({ players, open, onToggle, variant = 'in
       </div>
 
       {/* Rows */}
-      {players.map((player, i) => {
+      {players.map((player) => {
         const stats = computeStats(player)
-        const color = getPlayerColor(i)
+        const color = player.color
         const owed = formatOwed(stats.shotsOwed, stats.sipsOwed)
         const cleared = formatCleared(player.shotsTaken, player.sipsTaken)
 

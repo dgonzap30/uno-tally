@@ -12,7 +12,7 @@ export default function Header({ phase, onReset, onLeave }: HeaderProps) {
   return (
     <>
       <header
-        className="sticky top-0 z-20 px-3 sm:px-4 py-1.5 sm:py-2"
+        className="shrink-0 sticky top-0 z-20 px-3 sm:px-4 py-1.5 sm:py-2"
         style={{
           background: 'linear-gradient(180deg, rgba(20, 20, 28, 0.95) 0%, rgba(24, 24, 32, 0.90) 100%)',
           backdropFilter: 'blur(16px)',
@@ -42,10 +42,7 @@ export default function Header({ phase, onReset, onLeave }: HeaderProps) {
           {phase === 'playing' && (
             <button
               onClick={() => setShowConfirm(true)}
-              className="text-sm text-text-muted transition-colors font-medium"
-              style={{ }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#ED1C24')}
-              onMouseLeave={e => (e.currentTarget.style.color = '')}
+              className="text-sm text-text-muted hover:text-[#ED1C24] transition-colors font-medium"
             >
               New Game
             </button>

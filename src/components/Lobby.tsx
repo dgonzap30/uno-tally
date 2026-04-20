@@ -18,13 +18,10 @@ function generateRoomCode(): string {
 
 export default function Lobby({ onSelect }: LobbyProps) {
   const [joinCode, setJoinCode] = useState("");
-  const [createdRoom, setCreatedRoom] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const createRoom = () => {
     const code = generateRoomCode();
     window.history.replaceState(null, "", `?room=${code}`);
-    setCreatedRoom(code);
     onSelect({ type: "online", room: code });
   };
 
@@ -33,14 +30,6 @@ export default function Lobby({ onSelect }: LobbyProps) {
     if (code.length < 2) return;
     window.history.replaceState(null, "", `?room=${code}`);
     onSelect({ type: "online", room: code });
-  };
-
-  const copyLink = () => {
-    const url = `${window.location.origin}${window.location.pathname}?room=${createdRoom}`;
-    navigator.clipboard.writeText(url).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
   };
 
   return (
@@ -113,28 +102,6 @@ export default function Lobby({ onSelect }: LobbyProps) {
             CREATE ROOM
           </button>
         </div>
-
-        {/* Room code display after creation */}
-        {createdRoom && (
-          <div className="mb-5 p-5 rounded-2xl table-card animate-slide-up text-center">
-            <p className="text-text-muted text-[10px] uppercase tracking-[0.2em] font-bold mb-3">Room Code</p>
-            <p
-              className="text-4xl tracking-[0.4em] mb-4"
-              style={{ fontFamily: "var(--font-display)", color: '#FFDE00', textShadow: '0 2px 8px rgba(255, 222, 0, 0.3)' }}
-            >
-              {createdRoom}
-            </p>
-            <button
-              onClick={copyLink}
-              className="text-sm text-text-secondary transition-all px-5 py-2 rounded-xl"
-              style={{ border: '1px solid rgba(255,255,255,0.08)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#4d94ff')}
-              onMouseLeave={e => (e.currentTarget.style.color = '')}
-            >
-              {copied ? "Copied!" : "Copy invite link"}
-            </button>
-          </div>
-        )}
 
         {/* Join Room */}
         <div className="flex gap-3 animate-slide-up" style={{ animationDelay: "420ms" }}>

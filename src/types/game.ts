@@ -1,6 +1,7 @@
 export interface Player {
   id: string
   name: string
+  color: string
   totalPoints: number
   history: HistoryEntry[]
   shotsTaken: number
@@ -8,6 +9,7 @@ export interface Player {
 }
 
 export interface HistoryEntry {
+  id: string
   pointsAdded: number
   source: 'score' | 'win-bonus' | 'drink-shot' | 'drink-sip'
   timestamp: number

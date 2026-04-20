@@ -37,7 +37,7 @@ export default function ConnectionStatus({
   };
 
   return (
-    <div className="flex items-center justify-center gap-2.5 py-2.5 text-xs">
+    <div className="shrink-0 flex items-center justify-center gap-2.5 py-2.5 text-xs">
       <span
         className={`inline-block w-2 h-2 rounded-full ${dotColor} animate-dot-pulse`}
       />
@@ -45,9 +45,7 @@ export default function ConnectionStatus({
       <span className="text-text-muted/40">|</span>
       <button
         onClick={copyLink}
-        className="flex items-center gap-1.5 font-mono text-text-muted transition-colors group"
-        onMouseEnter={e => (e.currentTarget.style.color = '#4d94ff')}
-        onMouseLeave={e => (e.currentTarget.style.color = '')}
+        className="flex items-center gap-1.5 font-mono text-text-muted hover:text-[#4d94ff] transition-colors group"
       >
         <span className="tracking-widest">{roomId}</span>
         <span className="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">

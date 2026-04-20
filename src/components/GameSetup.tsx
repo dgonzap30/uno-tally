@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import type { Player } from '../types/game'
-import type { GameAction } from '../state/gameReducer'
-import { getPlayerColor } from '../state/gameReducer'
+import type { UIAction } from '../state/gameReducer'
 
 interface GameSetupProps {
   players: Player[]
-  dispatch: React.Dispatch<GameAction>
+  dispatch: React.Dispatch<UIAction>
 }
 
 export default function GameSetup({ players, dispatch }: GameSetupProps) {
@@ -26,6 +25,7 @@ export default function GameSetup({ players, dispatch }: GameSetupProps) {
   }
 
   return (
+    <div className="flex-1 min-h-0 overflow-y-auto">
     <div className="max-w-lg mx-auto px-5 py-10">
       <div className="text-center mb-10 animate-slide-up">
         <div className="card-fan mb-6">
@@ -80,7 +80,7 @@ export default function GameSetup({ players, dispatch }: GameSetupProps) {
       {players.length > 0 && (
         <div className="space-y-2.5 mb-8">
           {players.map((player, i) => {
-            const color = getPlayerColor(i)
+            const color = player.color
             return (
               <div
                 key={player.id}
@@ -102,9 +102,7 @@ export default function GameSetup({ players, dispatch }: GameSetupProps) {
                 </span>
                 <button
                   onClick={() => dispatch({ type: 'REMOVE_PLAYER', playerId: player.id })}
-                  className="text-text-muted transition-colors text-lg leading-none w-8 h-8 flex items-center justify-center rounded-lg"
-                  onMouseEnter={e => { e.currentTarget.style.color = '#ED1C24'; e.currentTarget.style.background = 'rgba(237,28,36,0.10)' }}
-                  onMouseLeave={e => { e.currentTarget.style.color = ''; e.currentTarget.style.background = '' }}
+                  className="text-text-muted hover:text-[#ED1C24] hover:bg-[#ED1C24]/10 transition-colors text-lg leading-none w-8 h-8 flex items-center justify-center rounded-lg"
                 >
                   ✕
                 </button>
@@ -150,6 +148,7 @@ export default function GameSetup({ players, dispatch }: GameSetupProps) {
           <span className="text-text-muted text-xs">Win = +50 pts</span>
         </div>
       </div>
+    </div>
     </div>
   )
 }

@@ -6,6 +6,7 @@ interface ScoreEntryProps {
 }
 
 const QUICK_SCORES = [5, 10, 20, 25, 50]
+const MAX_POINTS = 10000
 
 export default function ScoreEntry({ onSubmit, onClose }: ScoreEntryProps) {
   const [raw, setRaw] = useState('')
@@ -15,8 +16,8 @@ export default function ScoreEntry({ onSubmit, onClose }: ScoreEntryProps) {
     inputRef.current?.focus()
   }, [])
 
-  const parsed = raw.trim() ? Math.floor(Number(raw)) : 0
-  const isValid = parsed > 0 && Number.isFinite(parsed)
+  const parsed = raw ? parseInt(raw, 10) : 0
+  const isValid = Number.isInteger(parsed) && parsed > 0 && parsed <= MAX_POINTS
 
   const handleSubmit = () => {
     if (isValid) {
@@ -49,17 +50,17 @@ export default function ScoreEntry({ onSubmit, onClose }: ScoreEntryProps) {
       <div className="flex gap-2.5">
         <input
           ref={inputRef}
-          type="number"
+          type="text"
           inputMode="numeric"
+          pattern="[0-9]*"
           value={raw}
-          onChange={e => setRaw(e.target.value)}
+          onChange={e => setRaw(e.target.value.replace(/\D/g, '').slice(0, 5))}
           onKeyDown={e => {
             if (e.key === 'Enter') handleSubmit()
             if (e.key === 'Escape') onClose()
           }}
           placeholder="Custom"
-          min={1}
-          step={1}
+          maxLength={5}
           className="flex-1 h-12 px-4 rounded-xl text-text-primary placeholder:text-text-muted/50 text-base outline-none transition-all"
           style={{
             fontSize: '16px',

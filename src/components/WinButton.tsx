@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import type { Player } from '../types/game'
-import type { GameAction } from '../state/gameReducer'
-import { getPlayerColor } from '../state/gameReducer'
+import type { UIAction } from '../state/gameReducer'
 
 interface WinButtonProps {
   playerId: string
   allPlayers: Player[]
-  dispatch: React.Dispatch<GameAction>
+  dispatch: React.Dispatch<UIAction>
 }
 
 export default function WinButton({ playerId, allPlayers, dispatch }: WinButtonProps) {
@@ -70,7 +69,7 @@ export default function WinButton({ playerId, allPlayers, dispatch }: WinButtonP
 
             <div className="px-3 pb-3 space-y-1.5 max-h-[50vh] overflow-y-auto">
               {opponents.map((opp) => {
-                const color = getPlayerColor(allPlayers.indexOf(opp))
+                const color = opp.color
                 return (
                   <button
                     key={opp.id}

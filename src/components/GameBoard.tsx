@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import type { GameState } from '../types/game'
-import type { GameAction } from '../state/gameReducer'
-import { getPlayerColor } from '../state/gameReducer'
+import type { UIAction } from '../state/gameReducer'
 import { rankPlayers } from '../utils/playerStats'
 import PlayerCard from './PlayerCard'
 import GameStatsBar from './GameStatsBar'
@@ -10,7 +9,7 @@ import AddPlayerInline from './AddPlayerInline'
 
 interface GameBoardProps {
   state: GameState
-  dispatch: React.Dispatch<GameAction>
+  dispatch: React.Dispatch<UIAction>
 }
 
 function getGridClass(count: number): string {
@@ -32,7 +31,7 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
   const manyPlayers = state.players.length > 4
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-44px)] overflow-hidden">
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
       {/* Compact session bar */}
       <div className="shrink-0 px-2.5 sm:px-4 pt-1 pb-0.5">
         <GameStatsBar
@@ -73,7 +72,6 @@ export default function GameBoard({ state, dispatch }: GameBoardProps) {
                 key={player.id}
                 player={player}
                 allPlayers={state.players}
-                color={getPlayerColor(i)}
                 index={i}
                 rank={rankings.get(player.id) ?? i + 1}
                 totalPlayers={state.players.length}
